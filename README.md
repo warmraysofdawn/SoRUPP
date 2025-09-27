@@ -43,7 +43,7 @@ _It is only Russian language version. You can find English version in forks in n
 
 | Критерии | Tilda и другие конструкторы | AI | Услуги программиста | SoRUPP |
 | ------------- | ------------- | ------------- | ------------- | ------------- | 
-| Стоимость  | От 9$/месяц | От 0 до 200$ | От 1000$ до 2870$ | Бесплатно | 
-| Сроки  | От нескольких дней | От 5 минут без учёта правок | От одного месяца | Несколько минут  |  
+| Стоимость  | <span style="color:yellow">От 9$/месяц<span> | <span style="color:lightyellow">От 0 до 200$<span> | <span style="color:red">От 1000$ до 2870$<span> | <span style="color:green">Бесплатно<span> | 
+| Сроки  | <span style="color:yellow">От нескольких дней<span> | <span style="color:yellow">От 5 минут без учёта правок<span> | <span style="color:red">От одного месяца<span> | <span style="color:green">Несколько минут<span> |  
 | Готовность "из коробки"  | ✔️ | ❌ | ✔️ | ✔️ |
-| Простота | Очень просто | Сложно (могут требоваться правки) | Средняя сложность (договор) | Очень просто |
+| Простота | <span style="color:green">Очень просто<span> | <span style="color:red">Сложно (могут требоваться правки)<span> | <span style="color:yellow">Средняя сложность (договор)<span> | <span style="color:green">Очень просто<span> |
