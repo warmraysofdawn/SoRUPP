@@ -1,12 +1,12 @@
 import os
 import json
+import shutil
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import zipfile
 import re
 from io import BytesIO
-import sys
 
 app = Flask(__name__)
 CORS(app, origins=["http://127.0.0.1:5000", "http://localhost:5000"])
@@ -17,32 +17,6 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs('data', exist_ok=True)
 os.makedirs('static/templates', exist_ok=True)
-
-def get_resource_path(relative_path):
-    """Получает правильный путь к ресурсам для PyInstaller"""
-    try:
-        # PyInstaller создает временную папку в _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-# Обновляем пути к папкам
-if getattr(sys, 'frozen', False):
-    # Если приложение запущено из собранного exe
-    template_folder = get_resource_path('templates')
-    static_folder = get_resource_path('static')
-    data_folder = get_resource_path('data')
-    upload_folder = get_resource_path('static/uploads')
-else:
-    # Обычный режим разработки
-    template_folder = 'templates'
-    static_folder = 'static'
-    data_folder = 'data'
-    upload_folder = 'static/uploads'
-
-app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
-app.config['UPLOAD_FOLDER'] = upload_folder
 
 # Структура данных (полная версия)
 structure = {
@@ -231,16 +205,13 @@ structure = {
 # Load data
 def load_data():
     try:
-        data_path = os.path.join(data_folder, 'content.json') if getattr(sys, 'frozen', False) else 'data/content.json'
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open('data/content.json', 'r', encoding='utf-8') as f:
             content = json.load(f)
     except:
         content = []
     
-    # Аналогично для portfolio.json и galleries.json
     try:
-        portfolio_path = os.path.join(data_folder, 'portfolio.json') if getattr(sys, 'frozen', False) else 'data/portfolio.json'
-        with open(portfolio_path, 'r', encoding='utf-8') as f:
+        with open('data/portfolio.json', 'r', encoding='utf-8') as f:
             portfolio = json.load(f)
     except:
         portfolio = {
@@ -483,8 +454,7 @@ def process_template_for_seo(template_content, is_index=False):
     if not is_index:
         template_content = template_content.replace('src="content/', 'src="/content/')
         template_content = template_content.replace('src="covers/', 'src="/covers/')
-        # ИСПРАВЛЕНИЕ: galleries/ должно вести на относительные пути для статического сайта
-        template_content = template_content.replace('src="galleries/', 'src="../galleries/')
+        template_content = template_content.replace('src="galleries/', 'src="/galleries/')
         template_content = template_content.replace('src="portrait/', 'src="/portrait/')
         template_content = template_content.replace('href="styles.css"', 'href="/styles.css"')
         template_content = template_content.replace('src="graph.js"', 'src="/graph.js"')
@@ -492,40 +462,7 @@ def process_template_for_seo(template_content, is_index=False):
     
     return template_content
 
-# Новая исправленная функция для обработки путей в экспортированном сайте
-def process_template_for_seo_corrected(template_content, page_folder):
-    """
-    Обрабатывает HTML-контент с правильными путями для экспортированного сайта
-    """
-    # Заменяем все ссылки на .html файлы на чистые пути
-    template_content = re.sub(r'href="([^"/]+)\.html"', r'href="/\1"', template_content)
-    
-    # ОСОБОЕ ПРАВИЛО: заменяем ссылки на главную страницу
-    template_content = re.sub(r'href="(/?index)"', r'href="/"', template_content)
-    
-    # Корректируем пути к ресурсам в зависимости от папки страницы
-    if page_folder != 'index':
-        # Для страниц в подпапках используем относительные пути
-        template_content = template_content.replace('src="content/', f'src="../content/')
-        template_content = template_content.replace('src="covers/', f'src="../covers/')
-        template_content = template_content.replace('src="galleries/', f'src="../galleries/')
-        template_content = template_content.replace('src="portrait/', f'src="../portrait/')
-        template_content = template_content.replace('href="styles.css"', f'href="../styles.css"')
-        template_content = template_content.replace('src="graph.js"', f'src="../graph.js"')
-        template_content = template_content.replace('src="gallery.js"', f'src="../gallery.js"')
-    else:
-        # Для главной страницы пути остаются как есть
-        template_content = template_content.replace('src="content/', 'src="content/')
-        template_content = template_content.replace('src="covers/', 'src="covers/')
-        template_content = template_content.replace('src="galleries/', 'src="galleries/')
-        template_content = template_content.replace('src="portrait/', 'src="portrait/')
-        template_content = template_content.replace('href="styles.css"', 'href="styles.css"')
-        template_content = template_content.replace('src="graph.js"', 'src="graph.js"')
-        template_content = template_content.replace('src="gallery.js"', 'src="gallery.js"')
-    
-    return template_content
-
-import tempfile
+# Обновленная функция экспорта с сохранением в Downloads
 @app.route('/api/export', methods=['POST'])
 def export_site():
     content, portfolio, galleries = load_data()
@@ -535,18 +472,9 @@ def export_site():
     site_title = data.get('siteTitle', 'Портфолио творческих работ')
     template_name = portfolio.get('template', 'default')
     
-    # ЧЕТКО указываем путь для сохранения - папка Downloads пользователя
-    downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
-    export_base_path = os.path.join(downloads_path, 'SoRUPP_Exports')
-    os.makedirs(export_base_path, exist_ok=True)
-    
-    # Создаем уникальное имя файла с timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    zip_filename = f'portfolio_{username}_{timestamp}.zip'
-    zip_filepath = os.path.join(export_base_path, zip_filename)
-    
-    # Создаем физический файл на диске
-    with zipfile.ZipFile(zip_filepath, 'w') as zf:
+    # Create in-memory ZIP file
+    memory_file = BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zf:
         # Add data.json
         export_data = {
             'user': username,
@@ -555,25 +483,23 @@ def export_site():
             'portfolio': portfolio,
             'content': content,
             'galleries': galleries,
-            'structure': structure,
-            'export_path': zip_filepath
+            'structure': structure
         }
         zf.writestr('data.json', json.dumps(export_data, ensure_ascii=False, indent=2))
         
         # Create a separate ZIP with all works
-        all_works_zip_path = os.path.join(tempfile.gettempdir(), f'all_works_{timestamp}.zip')
-        with zipfile.ZipFile(all_works_zip_path, 'w') as works_zip:
+        all_works_zip = BytesIO()
+        with zipfile.ZipFile(all_works_zip, 'w') as works_zip:
             for item in content:
                 if item['content_file']:
                     file_path = os.path.join(app.config['UPLOAD_FOLDER'], item['content_file'])
                     if os.path.exists(file_path):
+                        # Use original filename but add ID to avoid conflicts
                         original_name = item['content_file'].split('_', 1)[1] if '_' in item['content_file'] else item['content_file']
                         works_zip.write(file_path, f"{item['id']}_{original_name}")
         
-        # Добавляем all_works.zip в основной архив
-        zf.write(all_works_zip_path, 'all_works.zip')
-        # Удаляем временный файл
-        os.unlink(all_works_zip_path)
+        all_works_zip.seek(0)
+        zf.writestr('all_works.zip', all_works_zip.getvalue())
         
         # Add uploaded files
         for item in content:
@@ -616,12 +542,12 @@ def export_site():
                                      data=export_data, 
                                      structure=structure)
         
-        # Process templates for SEO-friendly URLs with CORRECTED paths
+        # Process templates for SEO-friendly URLs
         index_html = process_template_for_seo(index_html, is_index=True)
-        works_html = process_template_for_seo_corrected(works_html, 'works')
-        graph_html = process_template_for_seo_corrected(graph_html, 'graph')
-        downloads_html = process_template_for_seo_corrected(downloads_html, 'downloads')
-        gallery_html = process_template_for_seo_corrected(gallery_html, 'gallery')
+        works_html = process_template_for_seo(works_html)
+        graph_html = process_template_for_seo(graph_html)
+        downloads_html = process_template_for_seo(downloads_html)
+        gallery_html = process_template_for_seo(gallery_html)
         
         # Create directory structure for human-readable URLs
         zf.writestr('index.html', index_html)
@@ -630,49 +556,22 @@ def export_site():
         zf.writestr('downloads/index.html', downloads_html)
         zf.writestr('gallery/index.html', gallery_html)
         
-        # Add JavaScript files with CORRECTED paths for galleries
-        try:
-            graph_js_path = get_resource_path('static/graph.js') if getattr(sys, 'frozen', False) else 'static/graph.js'
-            with open(graph_js_path, 'r', encoding='utf-8') as f:
-                graph_js_content = f.read()
-            zf.writestr('graph.js', graph_js_content)
-        except:
-            zf.writestr('graph.js', '// Graph JS file not found')
+        # Add JavaScript files
+        with open('static/graph.js', 'r', encoding='utf-8') as f:
+            zf.writestr('graph.js', f.read())
         
-        try:
-            gallery_js_path = get_resource_path('static/gallery.js') if getattr(sys, 'frozen', False) else 'static/gallery.js'
-            with open(gallery_js_path, 'r', encoding='utf-8') as f:
-                gallery_js_content = f.read()
-            
-            # CORRECTION: Fix paths in gallery.js for exported site
-            gallery_js_content = gallery_js_content.replace("imgElement.src = `/uploads/${image}`", "imgElement.src = `../galleries/${image}`")
-            gallery_js_content = gallery_js_content.replace("img.src = `/uploads/${currentImage}`", "img.src = `../galleries/${currentImage}`")
-            gallery_js_content = gallery_js_content.replace("img.src = `/uploads/${images[currentIndex]}`", "img.src = `../galleries/${images[currentIndex]}`")
-            gallery_js_content = gallery_js_content.replace("preloadImg.src = `/uploads/${imageSrc}`", "preloadImg.src = `../galleries/${imageSrc}`")
-            
-            zf.writestr('gallery.js', gallery_js_content)
-        except:
-            zf.writestr('gallery.js', '// Gallery JS file not found')
+        with open('static/gallery.js', 'r', encoding='utf-8') as f:
+            zf.writestr('gallery.js', f.read())
         
         # Add CSS from selected template
         template_path = f'static/templates/{template_name}/styles.css'
-        if getattr(sys, 'frozen', False):
-            template_path = get_resource_path(template_path)
-        
         if os.path.exists(template_path):
             with open(template_path, 'r', encoding='utf-8') as f:
                 zf.writestr('styles.css', f.read())
         else:
             # Fallback to default template
-            default_template_path = 'static/templates/default/styles.css'
-            if getattr(sys, 'frozen', False):
-                default_template_path = get_resource_path(default_template_path)
-            
-            if os.path.exists(default_template_path):
-                with open(default_template_path, 'r', encoding='utf-8') as f:
-                    zf.writestr('styles.css', f.read())
-            else:
-                zf.writestr('styles.css', '/* Default styles not found */')
+            with open('static/templates/default/styles.css', 'r', encoding='utf-8') as f:
+                zf.writestr('styles.css', f.read())
         
         # Add .htaccess for Apache servers
         htaccess_content = '''
@@ -698,108 +597,35 @@ RewriteRule ^ /%1 [NC,L,R]
 /gallery/index.html    /gallery    200
 '''
         zf.writestr('_redirects', redirects_content)
+    
+    memory_file.seek(0)
+    
+    # Дополнительно сохраняем файл в папку Downloads
+    try:
+        downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
+        export_base_path = os.path.join(downloads_path, 'SoRUPP_Exports')
+        os.makedirs(export_base_path, exist_ok=True)
         
-        # Add README file with export info
-        readme_content = f'''
-SoRUPP Portfolio Export
-======================
-
-Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-User: {username}
-Site Title: {site_title}
-Template: {template_name}
-
-Contents:
-- index.html - Main portfolio page
-- works/ - All works page
-- graph/ - Relationship graph
-- downloads/ - Downloads page  
-- gallery/ - Gallery page
-- content/ - Uploaded content files
-- covers/ - Cover images
-- galleries/ - Gallery images
-- portrait/ - Portrait image
-
-To deploy:
-1. Upload all files to your web server
-2. Ensure .htaccess is supported (for Apache)
-3. Or use _redirects file (for Netlify)
-
-Export path: {zip_filepath}
-'''
-        zf.writestr('README.txt', readme_content)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        zip_filename = f'portfolio_{username}_{timestamp}.zip'
+        zip_filepath = os.path.join(export_base_path, zip_filename)
+        
+        with open(zip_filepath, 'wb') as f:
+            f.write(memory_file.getvalue())
+            
+        print(f"ZIP file also saved to: {zip_filepath}")
+    except Exception as e:
+        print(f"Error saving to Downloads: {e}")
     
-    # Логируем путь для отладки
-    app.logger.info(f'Сайт экспортирован в: {zip_filepath}')
+    # Возвращаем файл для скачивания
+    memory_file.seek(0)
     
-    # Возвращаем информацию о сохраненном файле
-    return jsonify({
-        'status': 'success',
-        'message': f'Сайт успешно экспортирован в папку Downloads/SoRUPP_Exports',
-        'file_path': zip_filepath,
-        'file_name': zip_filename,
-        'file_size': os.path.getsize(zip_filepath),
-        'export_time': datetime.now().isoformat(),
-        'download_url': f'/api/download-export/{zip_filename}'
-    })
-
-# Новая исправленная функция для обработки путей в экспортированном сайте
-def process_template_for_seo_corrected(template_content, page_folder):
-    """
-    Обрабатывает HTML-контент с правильными путями для экспортированного сайта
-    """
-    # Заменяем все ссылки на .html файлы на чистые пути
-    template_content = re.sub(r'href="([^"/]+)\.html"', r'href="/\1"', template_content)
-    
-    # ОСОБОЕ ПРАВИЛО: заменяем ссылки на главную страницу
-    template_content = re.sub(r'href="(/?index)"', r'href="/"', template_content)
-    
-    # Корректируем пути к ресурсам в зависимости от папки страницы
-    if page_folder != 'index':
-        # Для страниц в подпапках используем относительные пути
-        template_content = template_content.replace('src="content/', f'src="../content/')
-        template_content = template_content.replace('src="covers/', f'src="../covers/')
-        template_content = template_content.replace('src="galleries/', f'src="../galleries/')
-        template_content = template_content.replace('src="portrait/', f'src="../portrait/')
-        template_content = template_content.replace('href="styles.css"', f'href="../styles.css"')
-        template_content = template_content.replace('src="graph.js"', f'src="../graph.js"')
-        template_content = template_content.replace('src="gallery.js"', f'src="../gallery.js"')
-    else:
-        # Для главной страницы пути остаются как есть
-        template_content = template_content.replace('src="content/', 'src="content/')
-        template_content = template_content.replace('src="covers/', 'src="covers/')
-        template_content = template_content.replace('src="galleries/', 'src="galleries/')
-        template_content = template_content.replace('src="portrait/', 'src="portrait/')
-        template_content = template_content.replace('href="styles.css"', 'href="styles.css"')
-        template_content = template_content.replace('src="graph.js"', 'src="graph.js"')
-        template_content = template_content.replace('src="gallery.js"', 'src="gallery.js"')
-    
-    return template_content
-
-# Старая функция (оставляем для совместимости)
-def process_template_for_seo(template_content, is_index=False):
-    """
-    Обрабатывает HTML-контент для создания человекочитаемых URL
-    """
-    # Заменяем все ссылки на .html файлы на чистые пути
-    template_content = re.sub(r'href="([^"/]+)\.html"', r'href="/\1"', template_content)
-    
-    # ОСОБОЕ ПРАВИЛО: заменяем ссылки на главную страницу
-    template_content = re.sub(r'href="(/?index)"', r'href="/"', template_content)
-    
-    # Для не-главных страниц добавляем корректные пути к ресурсам
-    if not is_index:
-        template_content = template_content.replace('src="content/', 'src="/content/')
-        template_content = template_content.replace('src="covers/', 'src="/covers/')
-        # ИСПРАВЛЕНИЕ: galleries/ должно вести на правильные пути
-        template_content = template_content.replace('src="galleries/', 'src="/galleries/')
-        template_content = template_content.replace('src="portrait/', 'src="/portrait/')
-        template_content = template_content.replace('href="styles.css"', 'href="/styles.css"')
-        template_content = template_content.replace('src="graph.js"', 'src="/graph.js"')
-        template_content = template_content.replace('src="gallery.js"', 'src="/gallery.js"')
-    
-    return template_content
-
+    return send_file(
+        memory_file,
+        download_name=f'portfolio_{username}.zip',
+        as_attachment=True,
+        mimetype='application/zip'
+    )
 
 # Эндпоинт для скачивания уже сохраненного файла
 @app.route('/api/download-export/<filename>')
