@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои работы - {{ data.site_title }}</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="portfolio-header">
+            {% if data.portfolio.portrait %}
+            <img src="portrait/{{ data.portfolio.portrait }}" alt="{{ data.portfolio.fullName }}" class="portfolio-avatar">
+            {% endif %}
+            <h1 class="portfolio-title">{{ data.portfolio.fullName }}</h1>
+            <p class="portfolio-quote">{{ data.portfolio.quote }}</p>
+        </header>
+        
+        <nav class="portfolio-nav">
+            <ul>
+                <li><a href="index.html">Обо мне</a></li>
+                <li><a href="works.html" class="active">Мои работы</a></li>
+                <li><a href="graph.html">Дерево творчества</a></li>
+                <li><a href="downloads.html">Скачать все работы</a></li>
+                <li><a href="gallery.html">Галереи</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <div class="filters">
+                <select id="sphereFilter">
+                    <option value="">Все сферы</option>
+                    {% for sphere_id, sphere in data.structure.сферы.items() %}
+                    <option value="{{ sphere_id }}">{{ sphere.name }}</option>
+                    {% endfor %}
+                </select>
+                
+                <select id="genreFilter">
+                    <option value="">Все жанры</option>
+                </select>
+                
+                <input type="text" id="searchInput" placeholder="Поиск по названию...">
+            </div>
+            
+            <div class="works-list">
+                {% for work in data.content %}
+                <div class="work-item" data-sphere="{{ work.sphere }}" data-genre="{{ work.genre }}">
+                    {% if work.cover_file %}
+                    <img src="covers/{{ work.cover_file }}" alt="{{ work.title }}">
+                    {% endif %}
+                    <div class="work-info">
+                        <h3>{{ work.title }}</h3>
+                        <p class="work-meta">{{ work.sphere_name }} • {{ work.genre_name }}{% if work.topic_name %} • {{ work.topic_name }}{% endif %}</p>
+                        <p class="work-date">Создано: {{ work.creation_date }}</p>
+                        <p class="work-desc">{{ work.description }}</p>
+                        
+                        {% if work.content_file %}
+                        <div class="work-actions">
+                            <a href="content/{{ work.content_file }}" target="_blank" class="btn">Открыть</a>
+                            <a href="content/{{ work.content_file }}" download class="btn btn-download">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8 10.5L4 6.5H6V2H10V6.5H12L8 10.5Z"/>
+                                    <path d="M14 12V14H2V12H0V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V12H14Z"/>
+                                </svg>
+                                Скачать
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+        
+        <footer class="portfolio-footer">
+            <a href="https://github.com/warmraysofdawn/SoRUPP" target="blank">Сайт создан при помощи СРКЦН</a>
+        </footer>
+    </div>
+    
+    <script>
+        // Скрипт для фильтрации работ
+        document.addEventListener('DOMContentLoaded', function() {
+            const sphereFilter = document.getElementById('sphereFilter');
+            const genreFilter = document.getElementById('genreFilter');
+            const searchInput = document.getElementById('searchInput');
+            const workItems = document.querySelectorAll('.work-item');
+            
+            // Обновление жанров при выборе сферы
+            sphereFilter.addEventListener('change', function() {
+                const sphereId = this.value;
+                genreFilter.innerHTML = '<option value="">Все жанры</option>';
+                
+                if (sphereId) {
+                    const sphere = {{ data.structure.сферы|tojson }};
+                    if (sphere[sphereId] && sphere[sphereId].genres) {
+                        sphere[sphereId].genres.forEach(genre => {
+                            const option = document.createElement('option');
+                            option.value = genre.id;
+                            option.textContent = genre.name;
+                            genreFilter.appendChild(option);
+                        });
+                    }
+                }
+                
+                filterWorks();
+            });
+            
+            function filterWorks() {
+                const sphereValue = sphereFilter.value;
+                const genreValue = genreFilter.value;
+                const searchValue = searchInput.value.toLowerCase();
+                
+                workItems.forEach(item => {
+                    const itemSphere = item.getAttribute('data-sphere');
+                    const itemGenre = item.getAttribute('data-genre');
+                    const itemTitle = item.querySelector('h3').textContent.toLowerCase();
+                    const itemDesc = item.querySelector('.work-desc').textContent.toLowerCase();
+                    
+                    const sphereMatch = !sphereValue || itemSphere === sphereValue;
+                    const genreMatch = !genreValue || itemGenre === genreValue;
+                    const searchMatch = !searchValue || itemTitle.includes(searchValue) || itemDesc.includes(searchValue);
+                    
+                    if (sphereMatch && genreMatch && searchMatch) {
+                        item.style.display = 'grid';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+            
+            genreFilter.addEventListener('change', filterWorks);
+            searchInput.addEventListener('input', filterWorks);
+        });
+    </script>
+</body>
+</html>
