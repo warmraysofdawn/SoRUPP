@@ -81,7 +81,8 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <!-- Исправлено: добавлен класс portfolio-header -->
+        <header class="portfolio-header">
             {% if data.portfolio.portrait %}
             <img src="portrait/{{ data.portfolio.portrait }}" alt="{{ data.portfolio.fullName }}" class="portfolio-avatar">
             {% endif %}
@@ -89,6 +90,7 @@
             <p class="portfolio-quote">{{ data.portfolio.quote }}</p>
         </header>
         
+        <!-- Навигация уже имеет правильный класс portfolio-nav -->
         <nav class="portfolio-nav">
             <ul>
                 <li><a href="index.html">Обо мне</a></li>
@@ -98,27 +100,31 @@
                 <li><a href="gallery.html">Галереи</a></li>
             </ul>
         </nav>
+
         <main>
-            <h2>Дерево творчества</h2>
-            <p>Визуальное представление всех работ и их взаимосвязей. Нажмите на узел для получения подробной информации.</p>
-            
-            <div class="graph-controls">
-                <button id="filter-sphere" class="btn">Фильтр по сферам</button>
-                <button id="filter-genre" class="btn">Фильтр по жанрам</button>
-                <button id="reset-filters" class="btn">Сбросить фильтры</button>
-            </div>
-            
-            <div id="graph-container"></div>
+            <!-- Исправлено: добавлен класс portfolio-section -->
+            <section class="portfolio-section">
+                <h2>Дерево творчества</h2>
+                <p>Визуальное представление всех работ и их взаимосвязей. Нажмите на узел для получения подробной информации.</p>
+                
+                <div class="graph-controls">
+                    <button id="filter-sphere" class="btn">Фильтр по сферам</button>
+                    <button id="filter-genre" class="btn">Фильтр по жанрам</button>
+                    <button id="reset-filters" class="btn">Сбросить фильтры</button>
+                </div>
+                
+                <div id="graph-container"></div>
+            </section>
         </main>
         
-        <footer>
+        <!-- Исправлено: добавлен класс portfolio-footer -->
+        <footer class="portfolio-footer">
             <a href="https://github.com/warmraysofdawn/SoRUPP" target="blank">Сайт создан при помощи СРКЦН</a>
         </footer>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
     <script>
-        // Встраиваем данные JSON в страницу
         window.graphData = {{ data | tojson }};
     </script>
     <script src="graph.js"></script>

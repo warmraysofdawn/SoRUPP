@@ -134,8 +134,17 @@ function updateTemplatePreview(templateName) {
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    if (sphereSelect) sphereSelect.addEventListener('change', updateGenres);
-    if (sphereSelect) sphereSelect.addEventListener('change', updateTopics);
+        if (sphereSelect) {
+        sphereSelect.addEventListener('change', function() {
+            updateGenres();
+            updateTopics(); // Сбрасываем темы при смене сферы
+        });
+    }
+    
+    if (genreSelect) {
+        genreSelect.addEventListener('change', updateTopics); // Обновляем темы при смене жанра
+    }
+
     if (contentFileInput) contentFileInput.addEventListener('change', updateFileName);
     if (coverFileInput) coverFileInput.addEventListener('change', updateCoverFile);
     if (addContentBtn) addContentBtn.addEventListener('click', addContent);
@@ -214,10 +223,13 @@ function setupGalleryListeners() {
 function updateGenres() {
     const sphereId = sphereSelect.value;
     genreSelect.innerHTML = '';
+    topicSelect.innerHTML = ''; // Сбрасываем темы при смене сферы
     
     if (!sphereId) {
         genreSelect.disabled = true;
         genreSelect.innerHTML = '<option value="">-- Сначала выберите сферу --</option>';
+        topicSelect.disabled = true;
+        topicSelect.innerHTML = '<option value="">-- Сначала выберите сферу --</option>';
         return;
     }
     
@@ -251,44 +263,53 @@ function updateGenres() {
             
             if (extensionMap[extension]) {
                 genreSelect.value = extensionMap[extension];
+                // После установки жанра обновляем темы
+                updateTopics();
             }
         }
     }
 }
-
 // Обновление тем
 function updateTopics() {
     const sphereId = sphereSelect.value;
+    const genreId = genreSelect.value;
     topicSelect.innerHTML = '';
     
-    if (!sphereId) {
+    if (!sphereId || !genreId) {
         topicSelect.disabled = true;
-        topicSelect.innerHTML = '<option value="">-- Сначала выберите сферу --</option>';
+        topicSelect.innerHTML = '<option value="">-- Сначала выберите сферу и жанр --</option>';
         return;
     }
     
     const sphere = structure.сферы[sphereId];
     
-    // Проверяем, есть ли вообще темы у этой сферы
-    if (sphere && sphere.topics && sphere.topics.length > 0) {
-        topicSelect.disabled = false;
+    // Находим выбранный жанр и берем темы именно из него
+    if (sphere && sphere.genres) {
+        const selectedGenre = sphere.genres.find(genre => genre.id === genreId);
         
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = '-- Выберите тему --';
-        topicSelect.appendChild(defaultOption);
-        
-        // Заполняем темы из sphere.topics (не из genre!)
-        sphere.topics.forEach(topic => {
-            const option = document.createElement('option');
-            option.value = topic.id;
-            option.textContent = topic.name;
-            topicSelect.appendChild(option);
-        });
+        if (selectedGenre && selectedGenre.topics && selectedGenre.topics.length > 0) {
+            topicSelect.disabled = false;
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Выберите тему --';
+            topicSelect.appendChild(defaultOption);
+            
+            // Заполняем темы конкретного жанра
+            selectedGenre.topics.forEach(topic => {
+                const option = document.createElement('option');
+                option.value = topic;
+                option.textContent = topic;
+                topicSelect.appendChild(option);
+            });
+        } else {
+            // У этого жанра нет тем
+            topicSelect.disabled = true;
+            topicSelect.innerHTML = '<option value="">-- Для этого жанра нет тем --</option>';
+        }
     } else {
-        // Для сфер без тем (например, digital_art)
         topicSelect.disabled = true;
-        topicSelect.innerHTML = '<option value="">-- Для этой сферы нет тем --</option>';
+        topicSelect.innerHTML = '<option value="">-- Ошибка загрузки тем --</option>';
     }
 }
 
@@ -359,12 +380,20 @@ async function addContent() {
         formData.append('username', document.getElementById('username').value);
         formData.append('sphere', sphereSelect.value);
         formData.append('genre', genreSelect.value);
-        formData.append('topic', topicSelect.value || '');
         formData.append('title', document.getElementById('title').value);
         formData.append('description', document.getElementById('description').value);
         formData.append('creationDate', document.getElementById('creationDate').value);
         formData.append('relatedIds', document.getElementById('relatedIds').value);
         
+        // Тема добавляется только если она есть у выбранного жанра
+        const sphere = structure.сферы[sphereSelect.value];
+        const selectedGenre = sphere.genres.find(genre => genre.id === genreSelect.value);
+        if (selectedGenre && selectedGenre.topics && selectedGenre.topics.length > 0) {
+            formData.append('topic', topicSelect.value || '');
+        } else {
+            formData.append('topic', ''); // Пустая строка если тем нет
+        }
+
         if (contentFileInput.files[0]) {
             formData.append('contentFile', contentFileInput.files[0]);
         }
@@ -575,7 +604,7 @@ async function deleteGallery(id) {
 // Валидация формы
 function validateForm() {
     const username = document.getElementById('username').value;
-    const sphere = sphereSelect.value;
+    const sphere = structure.сферы[sphereSelect.value];
     const genre = genreSelect.value;
     const title = document.getElementById('title').value;
     const creationDate = document.getElementById('creationDate').value;
@@ -609,6 +638,13 @@ function validateForm() {
     if (!contentFile) {
         showAlert('Загрузите файл контента', 'error');
         return false;
+    }
+    if (sphere && sphere.genres) {
+        const selectedGenre = sphere.genres.find(genre => genre.id === genreSelect.value);
+        if (selectedGenre && selectedGenre.topics && selectedGenre.topics.length > 0 && !topicSelect.value) {
+            showAlert('Выберите тему для выбранного жанра', 'error');
+            return false;
+        }
     }
     
     return true;
