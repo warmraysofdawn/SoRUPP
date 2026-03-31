@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ work.title }} — {{ data.portfolio.fullName }}</title>
+    <link rel="stylesheet" href="/styles.css">
+    <meta name="description" content="{{ work.description }}">
+    <meta name="keywords" content="{{ data.portfolio.metaTags.keywords }}">
+</head>
+<body>
+    <header>
+        <h1>{{ work.title }}</h1>
+        <p class="work-meta">
+            {{ data.structure.сферы[work.sphere].name }} / 
+            {{ work.genre }} / 
+            {{ work.topic }}
+        </p>
+    </header>
+
+    <main>
+        {% if work.cover_file %}
+        <div class="work-cover">
+            <img src="/covers/{{ work.cover_file }}" alt="{{ work.title }}">
+        </div>
+        {% endif %}
+
+        <div class="work-description">
+            <h2>Описание</h2>
+            <p>{{ work.description }}</p>
+        </div>
+
+        {% if work.readme_html %}
+        <div class="work-detailed">
+            <h2>Журнал / Подробности</h2>
+            <div class="markdown-content">
+                {{ work.readme_html | safe }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if work.content_file %}
+        <div class="work-download">
+            <h2>Материалы работы</h2>
+            <a href="/content/{{ work.content_file }}" download>Скачать файл работы</a>
+        </div>
+        {% endif %}
+
+        {% if work.related_works %}
+        <div class="related-works">
+            <h2>Связанные работы</h2>
+            <ul>
+                {% for rel in work.related_works %}
+                <li><a href="/works/{{ rel.id }}.html">{{ rel.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <p class="back-link"><a href="/works/">← К списку работ</a></p>
+    </main>
+
+    <footer>
+        <p>&copy; {{ data.portfolio.fullName }}. Сгенерировано SoRUPP.</p>
+    </footer>
+</body>
+</html>

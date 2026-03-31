@@ -1,0 +1,947 @@
+/* ============================================
+   Тема: Постсоветский Думкор
+   Основа: greenwolf (адаптировано)
+   Атмосфера: мрачные панельки, ржавчина, бетон, тоска
+   Изюминка: ржаво-оранжевые акценты и лёгкая текстура кракелюра
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@1,200..900&display=swap');
+
+/* Базовые стили и сброс */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Основная палитра — бетон, ржавчина, выцветший асфальт */
+    --accent: #b85e3a;                /* ржаво-оранжевый */
+    --accent-hover: #d47c4ecc;         /* более светлый, выцветший */
+    --bg-primary: #1c1c1c;             /* антрацит */
+    --bg-secondary: #2e2e2e;            /* мокрый асфальт */
+    --text-primary: #d4d4d4;            /* светлый, как старый монитор */
+    --text-secondary: #9e9e9e;           /* выцветшая краска */
+    --border: #4a4a4a;                  /* тёмно-серый */
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.8);          /* глубокая тень */
+    --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.9);
+    
+    /* Универсальные переменные */
+    --accent-color: var(--accent);
+    --text-on-accent: #1c1c1c;           /* тёмный текст на ржавом */
+    --border-color: #5a5a5a;
+    --border-radius: 0.5rem;
+    --border-radius-sm: 0.25rem;
+    --shadow-color: rgba(0, 0, 0, 0.7);
+    --lightbox-bg: rgba(10, 10, 10, 0.95);
+    --tooltip-bg: rgba(30, 30, 30, 0.98);
+    
+    /* Цвета для сообщений */
+    --success-color: #6b8e4c;            /* выцветший хаки */
+    --warning-color: #c49a2b;            /* старая охра */
+    --error-color: #a1432b;              /* ржаво-красный */
+    
+    /* Типография */
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    
+    /* Отступы */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+}
+
+/* Лёгкая текстура бетона (имитация кракелюра / старой стены) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(45deg, 
+            rgba(255,255,255,0.01) 0px, 
+            rgba(255,255,255,0.01) 2px,
+            rgba(0,0,0,0.01) 2px,
+            rgba(0,0,0,0.01) 4px);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.3;
+}
+
+/* Базовые улучшения доступности */
+*:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+body {
+    font-family: 'PT Mono', 'Segoe UI', monospace;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: radial-gradient(circle at 10% 20%, rgba(70, 70, 70, 0.2) 0%, transparent 30%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--bg-secondary);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+/* Заголовок — навевает мысли о старых ДК */
+.portfolio-header {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border-bottom: 3px solid var(--accent);
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+    font-weight: 400;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+}
+
+.portfolio-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 0; /* убираем круг — добавляем прямоугольность, как старая фотография */
+    object-fit: cover;
+    border: 4px solid var(--accent);
+    margin-bottom: 1rem;
+    filter: grayscale(0.7) contrast(1.2);
+    box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent);
+}
+
+.portfolio-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    font-weight: 700;
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+}
+
+.portfolio-quote {
+    font-style: italic;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-family: "Source Code Pro", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: italic;
+    background: rgba(0,0,0,0.3);
+    padding: 0.5rem 1rem;
+    border-left: 4px solid var(--accent);
+}
+
+/* Навигация — как табличка на подъезде */
+.portfolio-nav {
+    background-color: #222;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+.portfolio-nav li {
+    margin: 0;
+}
+
+.portfolio-nav a {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: 'PT Mono', monospace;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+.portfolio-nav a:hover {
+    color: var(--accent);
+    background-color: rgba(184, 94, 58, 0.15);
+}
+
+.portfolio-nav a.active {
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
+    background-color: rgba(184, 94, 58, 0.25);
+}
+
+/* Основной контент */
+main {
+    padding: 2rem;
+}
+
+.portfolio-section {
+    margin-bottom: 3rem;
+}
+
+.portfolio-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--accent);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.bio p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    max-width: 65ch;
+    color: var(--text-secondary);
+    font-family: "Source Code Pro", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-left: 2px solid var(--accent);
+}
+
+/* Статистика — как показатели на старом заводском щите */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: #222;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 1px #3a3a3a, var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.stat:hover {
+    transform: translateY(-5px);
+    box-shadow: inset 0 0 0 1px var(--accent), var(--shadow-hover);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent);
+    font-family: 'PT Mono', monospace;
+}
+
+.stat-label {
+    display: block;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+}
+
+/* Работы — как выцветшие обложки */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.work-card {
+    background-color: #222;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.work-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.work-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    filter: grayscale(0.8) contrast(1.2);
+    border-bottom: 2px solid var(--accent);
+}
+
+.work-card-content {
+    padding: 1.5rem;
+}
+
+.work-card-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+}
+
+.work-card-content p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Кнопки — как штампы */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 0;
+    border: 2px solid var(--border);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+    font-family: 'PT Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+}
+
+.btn:hover {
+    background-color: var(--accent);
+    color: #1c1c1c;
+    border-color: var(--accent);
+}
+
+.btn-success {
+    background-color: #6b8e4c;
+    color: #1c1c1c;
+    border-color: #6b8e4c;
+}
+
+.btn-success:hover {
+    background-color: #4f6a39;
+    border-color: #4f6a39;
+}
+
+.btn-download {
+    background-color: var(--accent);
+    color: #1c1c1c;
+    border-color: var(--accent);
+}
+
+.btn-download:hover {
+    background-color: #d47c4e;
+    border-color: #d47c4e;
+}
+
+.btn svg {
+    margin-right: 0.5rem;
+    fill: currentColor;
+}
+
+.work-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.actions-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Страница работ */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filters select, .filters input {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background-color: #222;
+    color: var(--text-primary);
+    font-size: 1rem;
+    min-width: 180px;
+    font-family: 'PT Mono', monospace;
+}
+
+.filters select:focus, .filters input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(184, 94, 58, 0.3);
+}
+
+.works-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.work-item {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #222;
+    border-radius: 0;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.work-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.work-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 0;
+    filter: grayscale(0.8) contrast(1.2);
+    border: 2px solid var(--accent);
+}
+
+.work-info h3 {
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+}
+
+.work-meta, .work-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.work-desc {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Страница загрузок */
+.downloads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.downloads-info p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.downloads-category {
+    margin-bottom: 2rem;
+}
+
+.downloads-category h3 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: "Rubik Glitch", "Playfair Display SC", serif;
+    text-transform: uppercase;
+}
+
+.downloads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.download-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: #222;
+    border-radius: 0;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.download-item:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--accent);
+}
+
+.download-info h4 {
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.download-meta, .download-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.download-date {
+    font-weight: 500;
+}
+
+.download-actions {
+    flex-shrink: 0;
+}
+
+/* Футер — как ржавая табличка */
+.portfolio-footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: #1a1a1a;
+    color: var(--text-secondary);
+    border-top: 3px solid var(--accent);
+    font-family: 'PT Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+}
+
+.portfolio-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.portfolio-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для галереи — как старые снимки */
+.gallery-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    background: #222;
+}
+
+.gallery-container {
+    margin-top: 1rem;
+}
+
+.gallery-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.gallery-images img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-color);
+    filter: grayscale(0.7) contrast(1.2);
+}
+
+.gallery-images img:hover {
+    transform: scale(1.02);
+    border-color: var(--accent);
+    box-shadow: 0 5px 15px var(--shadow-color);
+    filter: grayscale(0.5) contrast(1.3);
+}
+
+/* Лайтбокс — с эффектом старого проектора */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--lightbox-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.lightbox.hidden {
+    display: none;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    background: #1c1c1c;
+    border-radius: 0;
+    padding: 1rem;
+    border: 4px solid var(--accent);
+    box-shadow: 0 0 30px rgba(0,0,0,0.9);
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 0;
+    filter: grayscale(0.5);
+}
+
+.close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: var(--accent);
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #1c1c1c;
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid var(--accent);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 1rem;
+}
+
+.lightbox-nav button {
+    background-color: #1c1c1c;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    min-width: 50px;
+    min-height: 50px;
+}
+
+.lightbox-nav button:hover {
+    background-color: var(--accent);
+    color: #1c1c1c;
+}
+
+.lightbox-nav button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Стили для графа — как старый осциллограф */
+#graph-container {
+    width: 100%;
+    height: 600px;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    margin-top: 1.25rem;
+    position: relative;
+    background: #111;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.graph-controls {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.graph-controls button {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #222;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    min-height: 44px;
+    font-family: 'PT Mono', monospace;
+    text-transform: uppercase;
+}
+
+.graph-controls button:hover {
+    background-color: var(--accent);
+    color: #1c1c1c;
+}
+
+#graph-tooltip {
+    position: absolute;
+    background: var(--tooltip-bg);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: 0;
+    font-size: 0.875rem;
+    max-width: 300px;
+    z-index: 1000;
+    pointer-events: none;
+    display: none;
+    border: 2px solid var(--accent);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+#work-details-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #222;
+    padding: 1.5rem;
+    border-radius: 0;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    z-index: 1000;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 3px solid var(--accent);
+}
+
+#graph-legend {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #222;
+    padding: 10px;
+    border-radius: 0;
+    font-size: 12px;
+    max-width: 200px;
+    z-index: 100;
+    border: 2px solid var(--accent);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text-secondary);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    margin-right: 0.5rem;
+    border-radius: 0;
+}
+
+/* Сообщения и состояния */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.error-message {
+    background-color: var(--error-color);
+    color: #1c1c1c;
+    padding: var(--spacing-md);
+    border-radius: 0;
+    margin: var(--spacing-md) 0;
+    border-left: 6px solid #5e1e1e;
+}
+
+.success-message {
+    background-color: var(--success-color);
+    color: #1c1c1c;
+    padding: var(--spacing-md);
+    border-radius: 0;
+    margin: var(--spacing-md) 0;
+    border-left: 6px solid #2e4a2a;
+}
+
+/* Улучшение доступности */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-contrast: high) {
+    :root {
+        --text-primary: #f0f0f0;
+        --text-secondary: #c0c0c0;
+        --border-color: #ffffff;
+        --accent: #ff7b4a;
+    }
+    
+    body {
+        background: #000000;
+    }
+    
+    .container {
+        border: 2px solid #ffffff;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+        padding: 0.5rem;
+    }
+    
+    .portfolio-nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .portfolio-nav a {
+        padding: 0.75rem 1rem;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .works-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .filters {
+        flex-direction: column;
+    }
+    
+    .filters select, .filters input {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .actions-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .download-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .download-actions {
+        align-self: stretch;
+        text-align: center;
+    }
+    
+    .portfolio-title {
+        font-size: 2rem;
+    }
+    
+    main {
+        padding: 1.5rem;
+    }
+    
+    .gallery-images {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .graph-controls {
+        flex-direction: column;
+    }
+    
+    #graph-legend {
+        position: relative;
+        top: auto;
+        right: auto;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .portfolio-avatar {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .work-actions {
+        flex-direction: column;
+    }
+    
+    .gallery-images {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .lightbox-content {
+        padding: 0.5rem;
+    }
+    
+    .lightbox-nav button {
+        padding: 0.5rem 0.75rem;
+    }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачать все работы - {{ data.site_title }}</title>
+    <link rel="stylesheet" href="styles.css">
+
+<body>
+    <div class="container">
+        <header class="portfolio-header">
+            {% if data.portfolio.portrait %}
+            <img src="portrait/{{ data.portfolio.portrait }}" alt="{{ data.portfolio.fullName }}" class="portfolio-avatar">
+            {% endif %}
+            <h1 class="portfolio-title">{{ data.portfolio.fullName }}</h1>
+            <p class="portfolio-quote">{{ data.portfolio.quote }}</p>
+        </header>
+        
+        <nav class="portfolio-nav">
+            <ul>
+                <li><a href="index.html">Обо мне</a></li>
+                <li><a href="works.html">Мои работы</a></li>
+                <li><a href="graph.html">Дерево творчества</a></li>
+                <li><a href="downloads.html" class="active">Скачать все работы</a></li>
+                <li><a href="gallery.html">Галереи</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <section class="portfolio-section">
+                <h2>Скачать все работы</h2>
+                <p>На этой странице вы можете скачать все мои работы. Для удобства работы сгруппированы по сферам творчества.</p>
+                
+                <div class="downloads-header">
+                    <div class="downloads-info">
+                        <p>Всего работ: <strong>{{ data.content|length }}</strong></p>
+                        <p>Доступно для скачивания: <strong>{{ data.content|selectattr('content_file')|list|length }}</strong></p>
+                    </div>
+<a href="all_works.zip" download class="btn btn-success">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 10.5L4 6.5H6V2H10V6.5H12L8 10.5Z"/>
+        <path d="M14 12V14H2V12H0V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V12H14Z"/>
+    </svg>
+    Скачать все работы архивом
+</a>
+                </div>
+                
+                {% for sphere_id, sphere in data.structure.сферы.items() %}
+                {% set sphere_works = data.content|selectattr('sphere', 'equalto', sphere_id)|list %}
+                {% if sphere_works %}
+                <div class="downloads-category">
+                    <h3>{{ sphere.name }}</h3>
+                    <div class="downloads-list">
+                        {% for work in sphere_works %}
+                        {% if work.content_file %}
+                        <div class="download-item">
+                            <div class="download-info">
+                                <h4>{{ work.title }}</h4>
+                                <p class="download-meta">
+                                    {{ work.genre_name }}{% if work.topic_name %} • {{ work.topic_name }}{% endif %}
+                                    <span class="download-date">{{ work.creation_date }}</span>
+                                </p>
+                                <p class="download-desc">{{ work.description }}</p>
+                            </div>
+                            <div class="download-actions">
+                                <a href="content/{{ work.content_file }}" download class="btn btn-download">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 10.5L4 6.5H6V2H10V6.5H12L8 10.5Z"/>
+                                        <path d="M14 12V14H2V12H0V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V12H14Z"/>
+                                    </svg>
+                                    Скачать
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </section>
+        </main>
+        
+        <footer class="portfolio-footer">
+            <a href="https://github.com/warmraysofdawn/SoRUPP" target="blank">Сайт создан при помощи СРКЦН</a>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            
+            downloadAllBtn.addEventListener('click', function() {
+                alert('Функция скачивания всех работ архивом будет реализована в будущем. Пока что скачивайте работы по отдельности.');
+            });
+        });
+    </script>
+</body>
+</html>

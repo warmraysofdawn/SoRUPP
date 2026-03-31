@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталогизатор творческих работ</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Cytoscape для графа -->
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <style>
+        /* ===== Базовые стили (можно вынести в отдельный файл) ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: #fff;
+            border-radius: 8px 8px 0 0;
+            padding: 10px 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border-radius: 8px 8px 0 0;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            border-bottom: none;
+        }
+
+        .tab:hover {
+            background: #dee2e6;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-color: #ddd;
+            border-bottom-color: #fff;
+            margin-bottom: -1px;
+            color: #0d6efd;
+        }
+
+        .tab-content {
+            display: none;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Карточки и сетки */
+        .card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Формы */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #0d6efd;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.25);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-upload-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-name {
+            margin-left: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+
+        .btn-success {
+            background: #198754;
+        }
+        .btn-success:hover {
+            background: #157347;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn-warning:hover {
+            background: #ffca2c;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #bb2d3b;
+        }
+
+        .btn-info {
+            background: #0dcaf0;
+            color: #000;
+        }
+        .btn-info:hover {
+            background: #31d2f2;
+        }
+
+        /* Список работ */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .work-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+
+        .work-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .work-card .work-checkbox {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .work-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            padding-right: 30px;
+        }
+
+        .work-card .work-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .work-card .work-description {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .work-card .tags {
+            margin: 10px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0d6efd;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .work-card .files-indicator {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 8px 0;
+        }
+
+        .work-card .work-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .work-actions .btn-small {
+            padding: 5px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: #fff;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        /* Галереи */
+        .gallery-preview, .gallery-previews {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .gallery-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .gallery-previews img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Бэкапы и Git */
+        .backups-list, .commits-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .backup-item, .commit-item {
+            border-bottom: 1px solid #eee;
+            padding: 12px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .backup-item:hover, .commit-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .backup-item.selected, .commit-item.selected {
+            background-color: #e3f2fd;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            background: #fff;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 5px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .file-item input[type="checkbox"] {
+            margin-right: 12px;
+        }
+
+        /* Граф */
+        #graph-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fefefe;
+        }
+
+        .filter-group {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+
+        /* Алерты */
+        .alert {
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0a3622;
+            border-color: #a3cfbb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #58151c;
+            border-color: #f1aeb5;
+        }
+
+        .alert-info {
+            background-color: #cff4fc;
+            color: #055160;
+            border-color: #9eeaf9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Вкладки -->
+        <div class="tabs">
+            <div class="tab active" data-tab="add">➕ Добавление</div>
+            <div class="tab" data-tab="manage">✏️ Управление</div>
+            <div class="tab" data-tab="constructor">🎨 Портфолио</div>
+            <div class="tab" data-tab="galleries">🖼️ Галереи</div>
+            <div class="tab" data-tab="export">📦 Экспорт сайта</div>
+            <div class="tab" data-tab="backup">💾 Бэкапы</div>
+            <div class="tab" data-tab="git">🔀 Git</div>
+            <div class="tab" data-tab="graph">📊 Граф</div>
+            <div class="tab" data-tab="data-export">📁 Экспорт данных</div>
+        </div>
+
+        <!-- ВКЛАДКА: Добавление работ -->
+        <div class="tab-content active" id="add-tab">
+            <div class="two-columns">
+                <div>
+                    <div class="card">
+                        <h2 class="section-title">➕ Добавление новой работы</h2>
+
+                        <div class="form-group">
+                            <label for="username">Имя пользователя (латиница):</label>
+                            <input type="text" id="username" placeholder="Например: ivanov_artist">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sphere">Сфера творчества:</label>
+                            <select id="sphere">
+                                <option value="">-- Выберите сферу --</option>
+                                <option value="programming">Программирование</option>
+                                <option value="literature">Литература</option>
+                                <option value="science_pop">Научпоп / Педагогика</option>
+                                <option value="digital_art">Цифровое искусство</option>
+                                <option value="traditional_art">Изобразительное искусство</option>
+                                <option value="science_research">Научные работы</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genre">Жанр/Направление:</label>
+                            <select id="genre" disabled>
+                                <option value="">-- Сначала выберите сферу --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="topic">Тема/Специализация:</label>
+                            <select id="topic" disabled>
+                                <option value="">-- Сначала выберите сферу --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title">Название работы:</label>
+                            <input type="text" id="title" placeholder="Введите название работы">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Краткое описание:</label>
+                            <textarea id="description" rows="3" placeholder="Краткое описание работы"></textarea>
+                        </div>
+
+                        <!-- НОВОЕ: подробное описание (Markdown) -->
+                        <div class="form-group">
+                            <label for="detailedDescription">📝 Подробное описание (Markdown):</label>
+                            <textarea id="detailedDescription" rows="6" placeholder="Введите подробное описание в формате Markdown. Можно использовать **жирный**, *курсив*, [ссылки](url) и т.д."></textarea>
+                        </div>
+
+                        <!-- НОВОЕ: теги -->
+                        <div class="form-group">
+                            <label for="tags">🏷️ Теги (через запятую):</label>
+                            <input type="text" id="tags" placeholder="например: фотография, природа, закат">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="creationDate">📅 Дата создания работы:</label>
+                            <input type="date" id="creationDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="relatedIds">🔗 Связь с другими работами (ID через запятую):</label>
+                            <input type="text" id="relatedIds" placeholder="Например: 5, 12, 18">
+                        </div>
+
+                        <div class="form-group">
+                            <label>📎 Загрузка контента (файл работы):</label>
+                            <div class="file-upload">
+                                <span class="file-upload-btn">Выбрать файл</span>
+                                <input type="file" id="contentFile">
+                            </div>
+                            <span class="file-name" id="contentFileName">Файл не выбран</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>🖼️ Загрузка обложки:</label>
+                            <div class="file-upload">
+                                <span class="file-upload-btn">Выбрать изображение</span>
+                                <input type="file" id="coverFile" accept="image/*">
+                            </div>
+                            <span class="file-name" id="coverFileName">Изображение не выбрано</span>
+                            <img id="coverPreview" class="content-preview hidden" style="max-width: 200px; margin-top: 10px; border-radius: 6px;">
+                        </div>
+
+                        <!-- НОВОЕ: загрузка .md файла -->
+                        <div class="form-group">
+                            <label>📄 Загрузить .md файл (приоритетнее текстового поля):</label>
+                            <div class="file-upload">
+                                <span class="file-upload-btn">Выбрать .md</span>
+                                <input type="file" id="readmeFile" accept=".md">
+                            </div>
+                            <span class="file-name" id="readmeFileName">Файл не выбран</span>
+                        </div>
+
+                        <button id="addContentBtn" class="btn btn-success">➕ Добавить работу</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <h2 class="section-title">📋 Последние добавленные</h2>
+                        <div id="recentContentList">
+                            <p class="text-muted">Загрузка...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Управление работами -->
+        <div class="tab-content" id="manage-tab">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="section-title" style="margin:0;">✏️ Управление работами</h2>
+                    <div>
+                        <button id="deleteSelectedBtn" class="btn btn-danger">🗑️ Удалить выбранные</button>
+                    </div>
+                </div>
+                <div id="editContentList" class="works-grid">
+                    <!-- Динамически заполняется JS -->
+                    <p class="text-muted">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ РАБОТЫ -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>✏️ Редактирование работы</h2>
+                <form id="editForm" enctype="multipart/form-data">
+                    <input type="hidden" id="editId">
+
+                    <div class="form-group">
+                        <label for="editUsername">Имя пользователя:</label>
+                        <input type="text" id="editUsername" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editSphere">Сфера:</label>
+                        <select id="editSphere" required>
+                            <option value="">-- Выберите сферу --</option>
+                            <!-- будут заполнены динамически -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editGenre">Жанр:</label>
+                        <select id="editGenre" required>
+                            <option value="">-- Сначала выберите сферу --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTopic">Тема:</label>
+                        <select id="editTopic" required>
+                            <option value="">-- Сначала выберите жанр --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTitle">Название:</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDescription">Краткое описание:</label>
+                        <textarea id="editDescription" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDetailedDescription">Подробное описание (Markdown):</label>
+                        <textarea id="editDetailedDescription" rows="6"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTags">Теги (через запятую):</label>
+                        <input type="text" id="editTags">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCreationDate">Дата создания:</label>
+                        <input type="date" id="editCreationDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRelatedIds">Связанные ID (через запятую):</label>
+                        <input type="text" id="editRelatedIds">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Текущий файл контента:</label>
+                        <div id="currentContentFile"></div>
+                        <label for="editContentFile">Заменить файл:</label>
+                        <input type="file" id="editContentFile">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Текущая обложка:</label>
+                        <div id="currentCoverFile"></div>
+                        <label for="editCoverFile">Заменить обложку:</label>
+                        <input type="file" id="editCoverFile" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Текущий .md файл:</label>
+                        <div id="currentReadmeFile"></div>
+                        <label for="editReadmeFile">Заменить .md:</label>
+                        <input type="file" id="editReadmeFile" accept=".md">
+                    </div>
+
+                    <button type="submit" class="btn btn-success">💾 Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Конструктор портфолио -->
+        <div class="tab-content" id="constructor-tab">
+            <div class="card">
+                <h2 class="section-title">🎨 Конструктор портфолио</h2>
+
+                <div class="form-group">
+                    <label for="portrait">Ваш портрет:</label>
+                    <div class="file-upload">
+                        <span class="file-upload-btn">Выбрать изображение</span>
+                        <input type="file" id="portrait" accept="image/*">
+                    </div>
+                    <span class="file-name" id="portraitFileName">Изображение не выбрано</span>
+                    <img id="portraitPreview" class="avatar-preview hidden" style="max-width: 150px; margin-top: 10px; border-radius: 50%;">
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Ваше имя:</label>
+                    <input type="text" id="fullName" placeholder="Иван Иванов">
+                </div>
+
+                <div class="form-group">
+                    <label for="quote">Цитата или девиз:</label>
+                    <input type="text" id="quote" placeholder="Вдохновляющая цитата">
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Краткая биография:</label>
+                    <textarea id="bio" rows="5" placeholder="Расскажите о себе..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="template">Шаблон дизайна:</label>
+                    <select id="template">
+                        <option value="default">Стандартный</option>
+                        <option value="minimal">Минималистичный</option>
+                        <option value="dark">Тёмный</option>
+                        <option value="creative">Креативный</option>
+                        <option value="professional">Профессиональный</option>
+                        <option value="cyberpunk">Киберпанк</option>
+                    </select>
+                    <div id="templatePreview">
+                        <img id="templatePreviewImg" class="hidden" style="max-width: 100%; margin-top: 10px; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="metaTitle">Мета-заголовок (SEO):</label>
+                    <input type="text" id="metaTitle" placeholder="Заголовок страницы">
+                </div>
+
+                <div class="form-group">
+                    <label for="metaDescription">Мета-описание (SEO):</label>
+                    <textarea id="metaDescription" rows="2" placeholder="Краткое описание"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="metaKeywords">Ключевые слова (через запятую):</label>
+                    <input type="text" id="metaKeywords" placeholder="ключ1, ключ2">
+                </div>
+
+                <button id="savePortfolioBtn" class="btn btn-success">💾 Сохранить настройки</button>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Управление галереями -->
+        <div class="tab-content" id="galleries-tab">
+            <div class="card">
+                <h2 class="section-title">🖼️ Управление галереями</h2>
+
+                <div class="form-group">
+                    <label for="galleryTitle">Название галереи:</label>
+                    <input type="text" id="galleryTitle" placeholder="Моя галерея">
+                </div>
+
+                <div class="form-group">
+                    <label for="galleryDescription">Описание:</label>
+                    <textarea id="galleryDescription" rows="2" placeholder="Описание галереи"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="galleryType">Тип галереи:</label>
+                    <select id="galleryType">
+                        <option value="grid">Сетка</option>
+                        <option value="slider">Слайдер</option>
+                        <option value="masonry">Масонри</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Изображения:</label>
+                    <div class="file-upload">
+                        <span class="file-upload-btn">Выбрать изображения</span>
+                        <input type="file" id="galleryImages" multiple accept="image/*">
+                    </div>
+                    <span class="file-name" id="galleryImagesName">Изображения не выбраны</span>
+                    <div id="galleryPreview" class="gallery-preview"></div>
+                </div>
+
+                <button id="addGalleryBtn" class="btn btn-success">➕ Создать галерею</button>
+
+                <div id="galleriesList" class="galleries-list">
+                    <p class="text-muted">Галереи еще не созданы.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Экспорт сайта -->
+        <div class="tab-content" id="export-tab">
+            <div class="card">
+                <h2 class="section-title">📦 Экспорт сайта-портфолио</h2>
+                <p>Сгенерируйте полноценный статический сайт со всеми работами, галереями и информацией.</p>
+
+                <div class="form-group">
+                    <label for="exportUsername">Имя пользователя (для URL):</label>
+                    <input type="text" id="exportUsername" placeholder="ivanov_artist">
+                </div>
+
+                <div class="form-group">
+                    <label for="siteTitle">Название сайта:</label>
+                    <input type="text" id="siteTitle" placeholder="Моё творческое портфолио">
+                </div>
+
+                <button id="exportSiteBtn" class="btn btn-success">🚀 Сгенерировать и скачать ZIP</button>
+                <button id="processSeoBtn" class="btn btn-info">🔧 Оптимизировать URL для SEO</button>
+
+                <div id="exportStatus" class="alert hidden" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Резервные копии -->
+        <div class="tab-content" id="backup-tab">
+            <div class="card">
+                <h2 class="section-title">💾 Резервное копирование</h2>
+                <div class="form-group">
+                    <button id="createBackupBtn" class="btn btn-success">➕ Создать бэкап</button>
+                    <button id="checkIntegrityBtn" class="btn btn-info">🔍 Проверить целостность</button>
+                </div>
+                <h3>📋 Список бэкапов</h3>
+                <div id="backupsList" class="backups-list">
+                    <p class="text-muted">Загрузка...</p>
+                </div>
+                <div id="backupDetails" class="hidden">
+                    <h4>Детали выбранной копии</h4>
+                    <div id="backupFilesList" class="file-list"></div>
+                    <div class="form-group">
+                        <button id="restoreSelectedBtn" class="btn btn-warning">🔄 Восстановить выбранные файлы</button>
+                        <button id="restoreAllBtn" class="btn btn-danger">⚠️ Восстановить всё</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Git интеграция -->
+        <div class="tab-content" id="git-tab">
+            <div class="card">
+                <h2 class="section-title">🔀 Интеграция с Git</h2>
+                <div class="form-group">
+                    <label for="gitProvider">Провайдер:</label>
+                    <select id="gitProvider">
+                        <option value="github">GitHub</option>
+                        <option value="gitlab">GitLab</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gitToken">Токен доступа (PAT):</label>
+                    <input type="password" id="gitToken" placeholder="Введите токен">
+                </div>
+                <div class="form-group">
+                    <label for="gitRepo">Репозиторий (владелец/репозиторий):</label>
+                    <input type="text" id="gitRepo" placeholder="username/repo">
+                </div>
+                <div class="form-group">
+                    <button id="saveGitSettingsBtn" class="btn">💾 Сохранить</button>
+                    <button id="testGitConnectionBtn" class="btn btn-info">🔌 Проверить подключение</button>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <button id="gitPushBtn" class="btn btn-success">📤 Выполнить commit и push</button>
+                    <button id="gitPullBtn" class="btn btn-warning">📥 Загрузить изменения (pull)</button>
+                </div>
+                <h3>📜 История коммитов</h3>
+                <div id="commitsList" class="commits-list">
+                    <p class="text-muted">Сначала сохраните настройки Git.</p>
+                </div>
+                <div id="commitDetails" class="hidden">
+                    <h4>Файлы в коммите</h4>
+                    <div id="commitFilesList" class="file-list"></div>
+                    <button id="restoreFromCommitBtn" class="btn btn-danger">♻️ Восстановить выбранные</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Граф связей -->
+        <div class="tab-content" id="graph-tab">
+            <div class="card">
+                <h2 class="section-title">📊 Граф связей между работами</h2>
+                <div id="graph-filters">
+                    <h3>🔍 Фильтр по сферам</h3>
+                    <div id="sphere-filters" class="filter-group"></div>
+                </div>
+                <div id="graph-container"></div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: Экспорт данных (CSV/JSON) -->
+        <div class="tab-content" id="data-export-tab">
+            <div class="card">
+                <h2 class="section-title">📁 Экспорт данных в CSV/JSON</h2>
+                <div class="form-group">
+                    <label>Формат:</label>
+                    <select id="exportFormat">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Выберите поля для экспорта:</label>
+                    <div id="fieldsSelection" style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 12px; border-radius: 6px;">
+                        <!-- будут заполнены динамически -->
+                    </div>
+                </div>
+                <button id="exportDataBtn" class="btn btn-success">📥 Скачать данные</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение основного скрипта (app.js) -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

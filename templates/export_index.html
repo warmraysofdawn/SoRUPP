@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.site_title }}</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="portfolio-header">
+            {% if data.portfolio.portrait %}
+            <img src="portrait/{{ data.portfolio.portrait }}" alt="{{ data.portfolio.fullName }}" class="portfolio-avatar">
+            {% endif %}
+            <h1 class="portfolio-title">{{ data.portfolio.fullName }}</h1>
+            <p class="portfolio-quote">{{ data.portfolio.quote }}</p>
+        </header>
+        
+        <nav class="portfolio-nav">
+            <ul>
+                <li><a href="index.html" class="active">Обо мне</a></li>
+                <li><a href="works.html">Мои работы</a></li>
+                <li><a href="graph.html">Дерево творчества</a></li>
+                <li><a href="downloads.html">Скачать все работы</a></li>
+                <li><a href="gallery.html">Галереи</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <section class="portfolio-section bio">
+                <h2>Обо мне</h2>
+                <p>{{ data.portfolio.bio }}</p>
+            </section>
+            
+            <section class="portfolio-section">
+                <h2>Статистика</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <span class="stat-number">{{ data.content|length }}</span>
+                        <span class="stat-label">Всего работ</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ data.content|map(attribute='sphere')|unique|list|length }}</span>
+                        <span class="stat-label">Сфер творчества</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ data.content|map(attribute='genre')|unique|list|length }}</span>
+                        <span class="stat-label">Направлений</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ data.content|selectattr('content_file')|list|length }}</span>
+                        <span class="stat-label">Доступно для скачивания</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="portfolio-section">
+                <h2>Последние работы</h2>
+                <div class="works-grid">
+                    {% for work in data.content[-3:] %}
+                    <div class="work-card">
+                        {% if work.cover_file %}
+                        <img src="covers/{{ work.cover_file }}" alt="{{ work.title }}">
+                        {% endif %}
+                        <div class="work-card-content">
+                            <h3>{{ work.title }}</h3>
+                            <p>{{ work.sphere_name }} • {{ work.genre_name }}</p>
+                            {% if work.content_file %}
+                            <div class="work-actions">
+                                <a href="content/{{ work.content_file }}" download class="btn btn-download">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 10.5L4 6.5H6V2H10V6.5H12L8 10.5Z"/>
+                                        <path d="M14 12V14H2V12H0V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V12H14Z"/>
+                                    </svg>
+                                    Скачать
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="actions-row">
+                    <a href="works.html" class="btn">Все работы</a>
+                    <a href="downloads.html" class="btn btn-success">Скачать все работы</a>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="portfolio-footer">
+            <a href="https://github.com/warmraysofdawn/SoRUPP" target="blank">Сайт создан при помощи СРКЦН</a>
+        </footer>
+    </div>
+</body>
+</html>
