@@ -1,0 +1,610 @@
+/* r-y2k.css — древний компьютерный интерфейс / Y2K стиль */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Ретро-палитра: тёмный фон, яркий текст, акценты как в старых мониторах */
+    --crt-green: #33ff33;
+    --crt-amber: #ffb347;
+    --crt-blue: #00aaff;
+    --crt-dark: #0c0c0c;
+    --crt-gray: #1a1a1a;
+    --crt-light: #2a2a2a;
+    
+    /* Основные переменные — используем зелёный как основной */
+    --accent: var(--crt-green);
+    --accent-hover: #44ff44;
+    --bg-primary: var(--crt-dark);
+    --bg-secondary: #111111;
+    --text-primary: #dddddd;
+    --text-secondary: #aaaaaa;
+    --border: #333333;
+    --shadow: 0 0 8px rgba(51, 255, 51, 0.2);
+    --shadow-hover: 0 0 12px rgba(51, 255, 51, 0.4);
+    
+    --accent-color: var(--accent);
+    --text-on-accent: #000000;
+    --border-color: #333333;
+    --border-radius: 0;        /* угловатость */
+    --border-radius-sm: 0;
+    --shadow-color: rgba(0, 255, 0, 0.2);
+    --lightbox-bg: rgba(0, 0, 0, 0.9);
+    --tooltip-bg: #000000;
+    
+    --text-high-contrast: #ffffff;
+    --text-on-dark: #ffffff;
+    --success-color: var(--crt-green);
+    --warning-color: var(--crt-amber);
+    --error-color: #ff5555;
+    
+    /* Типография — моноширинные шрифты */
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+}
+
+body {
+    font-family: 'VT323', 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+    background-color: #000000;
+    padding: 0.5rem;
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: none;
+    position: relative;
+}
+
+/* Эффект ЭЛТ-экрана (скан-линии) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.03) 0px, rgba(0, 255, 0, 0.03) 2px, transparent 2px, transparent 4px);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* Эффект мерцания */
+@keyframes flicker {
+    0% { opacity: 0.97; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 15px rgba(51, 255, 51, 0.3);
+    animation: flicker 0.15s infinite;
+    position: relative;
+}
+
+/* Заголовок в стиле старого терминала */
+.portfolio-header {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--accent);
+    position: relative;
+}
+
+.portfolio-header::after {
+    content: ">";
+    position: absolute;
+    left: 1rem;
+    bottom: 0.5rem;
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.portfolio-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    margin-bottom: 1rem;
+    filter: grayscale(80%) contrast(1.2);
+    image-rendering: pixelated;
+    background: #000;
+}
+
+.portfolio-title {
+    font-family: 'VT323', monospace;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 3px var(--accent);
+}
+
+.portfolio-quote {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-secondary);
+    border-top: 1px dashed var(--accent);
+    border-bottom: 1px dashed var(--accent);
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    font-size: 1rem;
+}
+
+/* Навигация — клавишные элементы */
+.portfolio-nav {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.portfolio-nav a {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    transition: all 0.1s linear;
+    border: 1px solid transparent;
+}
+
+.portfolio-nav a:hover {
+    background-color: var(--accent);
+    color: #000000;
+    border-color: var(--accent);
+    text-shadow: none;
+}
+
+.portfolio-nav a.active {
+    background-color: var(--accent);
+    color: #000000;
+    border-color: var(--accent);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Основной контент */
+main {
+    padding: var(--spacing-lg);
+}
+
+.portfolio-section {
+    margin-bottom: 2rem;
+}
+
+.portfolio-section h2 {
+    font-family: 'VT323', monospace;
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid var(--accent);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.bio p {
+    max-width: 70ch;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.3);
+    padding: 0.5rem;
+    border-left: 2px solid var(--accent);
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1rem;
+    background: #000000;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.stat:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent);
+    font-family: monospace;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Карточки работ */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.work-card {
+    background: #000000;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.work-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.work-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border);
+    filter: grayscale(70%) contrast(1.1);
+}
+
+.work-card-content {
+    padding: 1rem;
+}
+
+.work-card-content h3 {
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+    font-family: monospace;
+}
+
+/* Кнопки в стиле старых интерфейсов */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    background: #000000;
+    color: var(--text-primary);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.1s linear;
+    min-height: 44px;
+}
+
+.btn:hover {
+    background-color: var(--accent);
+    color: #000000;
+    border-color: var(--accent);
+}
+
+.btn-download {
+    background-color: #1a1a1a;
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-download:hover {
+    background-color: var(--accent);
+    color: #000;
+}
+
+.btn-success {
+    border-color: var(--crt-green);
+    color: var(--crt-green);
+}
+
+.btn-success:hover {
+    background-color: var(--crt-green);
+    color: #000;
+}
+
+.work-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.actions-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+/* Страница работ */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filters select, .filters input {
+    background: #000000;
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    font-family: monospace;
+    color: var(--accent);
+    font-size: 0.9rem;
+}
+
+.works-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.work-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: #000000;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.work-item:hover {
+    border-color: var(--accent);
+}
+
+.work-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.work-info h3 {
+    color: var(--accent);
+    font-size: 1.3rem;
+    font-family: monospace;
+}
+
+.work-meta, .work-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.work-desc {
+    margin: 0.5rem 0;
+}
+
+/* Страница загрузок */
+.downloads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.downloads-category {
+    margin-bottom: 1.5rem;
+}
+
+.downloads-category h3 {
+    font-family: monospace;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.download-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #000;
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.download-item:hover {
+    border-color: var(--accent);
+}
+
+.download-info h4 {
+    color: var(--accent);
+}
+
+/* Галерея */
+.gallery-section {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    background: #000;
+}
+
+.gallery-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.gallery-images img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    filter: grayscale(60%);
+    transition: all 0.2s;
+}
+
+.gallery-images img:hover {
+    border-color: var(--accent);
+    filter: grayscale(0%);
+    transform: scale(1.02);
+}
+
+/* Лайтбокс */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+.lightbox.hidden { display: none; }
+.lightbox-content {
+    background: #000;
+    border: 2px solid var(--accent);
+    padding: 0.5rem;
+    max-width: 90%;
+    max-height: 90%;
+}
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+}
+.close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: var(--accent);
+    font-size: 2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: monospace;
+}
+.lightbox-nav button {
+    background: #000;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-family: monospace;
+}
+.lightbox-nav button:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+/* Граф */
+#graph-container {
+    height: 500px;
+    border: 1px solid var(--border);
+    background: #000;
+}
+.graph-controls button {
+    background: #000;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.3rem 0.8rem;
+    font-family: monospace;
+    cursor: pointer;
+}
+.graph-controls button:hover {
+    background: var(--accent);
+    color: #000;
+}
+#graph-tooltip {
+    background: #000;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem;
+}
+#work-details-modal {
+    background: #000;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 1rem;
+}
+#graph-legend {
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+/* Футер */
+.portfolio-footer {
+    text-align: center;
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-primary);
+    font-size: 0.8rem;
+}
+.portfolio-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+.portfolio-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .portfolio-nav ul {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .portfolio-nav a {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .works-grid {
+        grid-template-columns: 1fr;
+    }
+    .gallery-images {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
