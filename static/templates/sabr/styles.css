@@ -1,0 +1,667 @@
+/* ------------------------------------------------------------
+   SABR
+   Сабр (терпение). Исламская эстетика: геометрия, арабески, каллиграфические узоры.
+   Глубокие цвета: лазурный, изумрудный, терракота.
+   Без полумесяцев, только арабские слова как декоративные элементы.
+------------------------------------------------------------ */
+
+/* Шрифты с поддержкой арабской вязи и кириллицы */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Arabic:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* ---------- ПЕРЕОПРЕДЕЛЕНИЕ ПЕРЕМЕННЫХ ---------- */
+:root {
+    --islamic-teal: #1a6b5e;
+    --islamic-lapis: #2c4c7a;
+    --islamic-terracotta: #b46b4a;
+    --islamic-gold: #c9a03d;
+    --islamic-ivory: #faf3e0;
+    --islamic-deep: #1e2a2e;
+    --islamic-saffron: #e8b85e;
+    
+    /* Основные переменные */
+    --accent: var(--islamic-teal);
+    --accent-hover: #135a4e;
+    --bg-primary: var(--islamic-ivory);
+    --bg-secondary: #f5ebd4;
+    --text-primary: #2a3228;
+    --text-secondary: #5a5a48;
+    --border: #c9b690;
+    --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.12);
+    
+    --accent-color: var(--accent);
+    --text-on-accent: #faf3e0;
+    --border-color: #c9a03d;
+    --border-radius: 12px;
+    --border-radius-sm: 6px;
+    --lightbox-bg: rgba(30, 42, 46, 0.96);
+    --tooltip-bg: #faf3e0;
+    
+    --success-color: var(--islamic-teal);
+    --error-color: var(--islamic-terracotta);
+    
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+}
+
+/* ---------- ГЛОБАЛЬНЫЙ СТИЛЬ ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--text-primary);
+    background: linear-gradient(145deg, #e8e0cc 0%, #d8ceb0 100%);
+    padding: 1.5rem;
+    position: relative;
+}
+
+/* Геометрический орнамент на фоне (восьмиугольники) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(42, 107, 94, 0.03) 40px, rgba(42, 107, 94, 0.03) 80px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::after {
+    content: "﴾ صبر ﴿";
+    font-family: 'Noto Sans Arabic', 'Amiri', serif;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 14px;
+    color: var(--islamic-teal);
+    opacity: 0.2;
+    white-space: nowrap;
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    position: relative;
+    z-index: 1;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Декоративная каллиграфическая лента вверху */
+.container::before {
+    content: "بسم الله الرحمن الرحيم";
+    font-family: 'Noto Sans Arabic', 'Amiri', serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--islamic-gold);
+    text-align: center;
+    display: block;
+    padding: 8px 0;
+    background: linear-gradient(90deg, transparent, rgba(201, 160, 61, 0.1), transparent);
+    border-bottom: 1px solid var(--border);
+    opacity: 0.5;
+}
+
+/* ---------- ШАПКА (с арабской вязью) ---------- */
+.portfolio-header {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(135deg, #faf3e0 0%, #f5ebd4 100%);
+    position: relative;
+}
+
+.portfolio-header::before,
+.portfolio-header::after {
+    content: "﴾";
+    font-family: 'Noto Sans Arabic', serif;
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--islamic-teal);
+    opacity: 0.3;
+}
+.portfolio-header::before {
+    top: 1rem;
+    left: 1.5rem;
+}
+.portfolio-header::after {
+    bottom: 1rem;
+    right: 1.5rem;
+    transform: rotate(180deg);
+}
+
+.portfolio-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--islamic-gold);
+    box-shadow: 0 0 0 4px var(--bg-primary), 0 0 0 8px var(--islamic-teal);
+    margin-bottom: 1rem;
+    transition: transform 0.3s;
+}
+
+.portfolio-avatar:hover {
+    transform: scale(1.02);
+}
+
+.portfolio-title {
+    font-family: 'Amiri', 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    color: var(--islamic-deep);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.05);
+    margin-bottom: 0.25rem;
+    position: relative;
+    display: inline-block;
+}
+
+.portfolio-title::before,
+.portfolio-title::after {
+    content: "★";
+    color: var(--islamic-gold);
+    font-size: 0.9rem;
+    opacity: 0.5;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.portfolio-title::before { left: -1.5rem; }
+.portfolio-title::after { right: -1.5rem; }
+
+.portfolio-quote {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    border-top: 1px solid var(--border);
+    display: inline-block;
+    padding-top: 0.5rem;
+    max-width: 70%;
+    margin: 0.5rem auto 0;
+}
+
+/* ---------- НАВИГАЦИЯ (геометрические разделители) ---------- */
+.portfolio-nav {
+    background: #fff8ec;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    list-style: none;
+}
+
+.portfolio-nav li {
+    position: relative;
+}
+
+.portfolio-nav li:not(:last-child)::after {
+    content: "✦";
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--islamic-gold);
+    font-size: 0.7rem;
+    opacity: 0.4;
+}
+
+.portfolio-nav a {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    padding: 0.8rem 1.4rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.portfolio-nav a:hover {
+    color: var(--islamic-teal);
+    background: rgba(26, 107, 94, 0.05);
+}
+
+.portfolio-nav a.active {
+    color: var(--islamic-teal);
+    border-bottom: 2px solid var(--islamic-gold);
+    font-weight: 600;
+}
+
+/* ---------- ОСНОВНОЙ КОНТЕНТ ---------- */
+main {
+    padding: 2.5rem 2rem;
+}
+
+.portfolio-section {
+    margin-bottom: 3rem;
+}
+
+.portfolio-section h2 {
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: var(--islamic-deep);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.portfolio-section h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--islamic-teal), var(--islamic-gold), transparent);
+}
+
+/* ---------- СТАТИСТИКА (геометрические плитки) ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.stat::before {
+    content: "⬟";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    color: var(--islamic-gold);
+    background: var(--bg-secondary);
+    padding: 0 4px;
+}
+
+.stat:hover {
+    transform: translateY(-4px);
+    border-color: var(--islamic-teal);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    display: block;
+    font-family: 'Amiri', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--islamic-teal);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ---------- КАРТОЧКИ РАБОТ (арабески) ---------- */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.work-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+.work-card::after {
+    content: "﴾";
+    font-family: 'Noto Sans Arabic', serif;
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.9rem;
+    color: var(--islamic-gold);
+    opacity: 0.3;
+    transform: rotate(90deg);
+}
+
+.work-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--islamic-teal);
+}
+
+.work-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border);
+}
+
+.work-card-content {
+    padding: 1.5rem;
+}
+
+.work-card-content h3 {
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* ---------- КНОПКИ (с арабскими литерами) ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid var(--islamic-teal);
+    color: var(--islamic-teal);
+    text-decoration: none;
+    border-radius: 40px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--islamic-teal);
+    color: var(--bg-primary);
+    border-color: var(--islamic-teal);
+    transform: translateY(-2px);
+}
+
+.btn-download {
+    background: var(--islamic-teal);
+    color: var(--bg-primary);
+}
+
+.btn-download:hover {
+    background: var(--accent-hover);
+}
+
+.btn-success {
+    border-color: var(--islamic-terracotta);
+    color: var(--islamic-terracotta);
+}
+
+.btn-success:hover {
+    background: var(--islamic-terracotta);
+    color: white;
+}
+
+.btn svg {
+    margin-right: 0.3rem;
+}
+
+/* ---------- ФИЛЬТРЫ ---------- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filters select, .filters input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    font-family: 'Playfair Display', serif;
+    border-radius: 40px;
+    color: var(--text-primary);
+}
+
+.filters select:focus, .filters input:focus {
+    outline: none;
+    border-color: var(--islamic-teal);
+}
+
+/* ---------- СПИСОК РАБОТ ---------- */
+.works-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.work-item {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: var(--shadow);
+    transition: 0.2s;
+    border-left: 6px solid var(--islamic-gold);
+}
+
+.work-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.work-item img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.work-info h3 {
+    font-family: 'Amiri', serif;
+    font-size: 1.3rem;
+}
+
+/* ---------- СТРАНИЦА СКАЧИВАНИЯ ---------- */
+.downloads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.downloads-category h3 {
+    font-family: 'Amiri', serif;
+    border-bottom: 2px solid var(--islamic-gold);
+    display: inline-block;
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.download-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.8rem;
+    transition: 0.1s;
+}
+
+.download-item:hover {
+    border-color: var(--islamic-teal);
+}
+
+/* ---------- ГАЛЕРЕЯ ---------- */
+.gallery-section {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+}
+
+.gallery-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+}
+
+.gallery-images img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.gallery-images img:hover {
+    border-color: var(--islamic-gold);
+    transform: scale(1.02);
+}
+
+/* Лайтбокс */
+.lightbox-content {
+    background: var(--bg-primary);
+    border-radius: 20px;
+    border: 2px solid var(--islamic-gold);
+}
+.close, .lightbox-nav button {
+    background: var(--islamic-teal);
+    color: white;
+    border-radius: 50%;
+}
+
+/* ---------- ГРАФ ---------- */
+#graph-container {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-secondary);
+}
+
+.graph-controls button {
+    background: var(--bg-secondary);
+    border: 1px solid var(--islamic-teal);
+    border-radius: 30px;
+    font-family: 'Playfair Display', serif;
+    padding: 0.5rem 1rem;
+}
+
+#graph-legend {
+    background: rgba(250, 243, 224, 0.95);
+    border-radius: 12px;
+    border: 1px solid var(--islamic-gold);
+}
+
+/* ---------- ФУТЕР ---------- */
+.portfolio-footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-secondary);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.portfolio-footer a {
+    color: var(--islamic-teal);
+    text-decoration: none;
+}
+
+.portfolio-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- АРАБСКИЕ ДЕКОРЫ ---------- */
+/* Добавляем арабские слова как узоры в разных местах */
+.portfolio-section:first-of-type .bio p::after {
+    content: " \0625\0646 \0634\0627\0621 \0627\0644\0644\0647";
+    font-family: 'Noto Sans Arabic', serif;
+    font-size: 0.7rem;
+    color: var(--islamic-gold);
+    opacity: 0.4;
+    display: block;
+    text-align: left;
+    margin-top: 0.5rem;
+}
+
+.work-card-content .work-actions::before {
+    content: "﴿";
+    font-family: 'Noto Sans Arabic', serif;
+    margin-right: 0.5rem;
+    color: var(--islamic-terracotta);
+    opacity: 0.5;
+}
+
+/* ---------- АДАПТИВ ---------- */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .portfolio-title {
+        font-size: 1.8rem;
+    }
+    .portfolio-title::before,
+    .portfolio-title::after {
+        display: none;
+    }
+    .filters {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .container::before {
+        font-size: 0.5rem;
+    }
+    .portfolio-header::before,
+    .portfolio-header::after {
+        font-size: 1rem;
+    }
+}

@@ -1,4 +1,4 @@
-/* crypt.css — хоррор-тема с пугающими эффектами и лёгкими скримерами */
+/* crypto.css — хоррор-тема с пугающими эффектами и лёгкими скримерами */
 
 @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=VT323&display=swap');
 
@@ -640,3 +640,4 @@ main {
         grid-template-columns: 1fr;
     }
 }
+/* the end  */

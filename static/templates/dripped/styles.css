@@ -1,0 +1,460 @@
+/* ------------------------------------------------------------
+   DRIPPED
+   Потёкший уличный стиль. Кирпичная стена, неоновые акценты, эффект свежей краски.
+   Не меняет HTML/JS.
+------------------------------------------------------------ */
+
+/* ---------- ШРИФТЫ ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Courier+Prime:wght@400;700&display=swap');
+
+/* ---------- ПЕРЕОПРЕДЕЛЕНИЕ ПЕРЕМЕННЫХ ---------- */
+:root {
+    --graffiti-neon-pink: #ff007f;
+    --graffiti-neon-cyan: #00f0ff;
+    --graffiti-neon-yellow: #ffe600;
+    --graffiti-black: #0a0a0a;
+    --graffiti-dark-gray: #1a1a1a;
+    --graffiti-brick: #2c1e16;
+    --graffiti-spray: rgba(0, 0, 0, 0.85);
+    
+    /* Системные переменные */
+    --accent: var(--graffiti-neon-pink);
+    --accent-hover: var(--graffiti-neon-cyan);
+    --bg-primary: var(--graffiti-black);
+    --bg-secondary: var(--graffiti-spray);
+    --text-primary: #f0f0f0;
+    --text-secondary: #cccccc;
+    --border: #333333;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    --shadow-hover: 0 0 15px var(--graffiti-neon-pink);
+    --border-color: var(--graffiti-neon-pink);
+    --border-radius: 0;
+    --border-radius-sm: 0;
+    --lightbox-bg: rgba(0, 0, 0, 0.95);
+}
+
+/* ---------- ГЛОБАЛЬНЫЙ ФОН: КИРПИЧНАЯ СТЕНА ---------- */
+body {
+    font-family: 'Courier Prime', monospace;
+    background: var(--graffiti-black);
+    position: relative;
+    padding: 1rem;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(60, 40, 30, 0.4) 0px,
+        rgba(60, 40, 30, 0.4) 2px,
+        transparent 2px,
+        transparent 8px
+    ), repeating-linear-gradient(
+        0deg,
+        #2a1e18 0px,
+        #2a1e18 1px,
+        #1f1510 1px,
+        #1f1510 80px
+    );
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ---------- ОСНОВНОЙ КОНТЕЙНЕР ---------- */
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    background: var(--graffiti-spray);
+    backdrop-filter: blur(1px);
+    border: 2px solid var(--graffiti-neon-pink);
+    box-shadow: 0 0 0 4px var(--graffiti-black), 0 0 0 8px var(--graffiti-neon-cyan);
+    position: relative;
+    transition: all 0.3s;
+}
+
+/* Эффект потёков на контейнере */
+.container::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 20%;
+    width: 60%;
+    height: 20px;
+    background: linear-gradient(90deg, transparent, var(--graffiti-neon-pink), transparent);
+    filter: blur(4px);
+    opacity: 0.6;
+}
+
+/* ---------- ШАПКА ---------- */
+.portfolio-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    background: radial-gradient(circle at 0% 30%, rgba(255, 0, 127, 0.2), transparent);
+    border-bottom: 3px dashed var(--graffiti-neon-cyan);
+    position: relative;
+}
+
+.portfolio-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--graffiti-neon-yellow);
+    box-shadow: 0 0 0 4px var(--graffiti-black), 0 0 0 8px var(--graffiti-neon-pink);
+    transition: 0.2s;
+}
+
+.portfolio-avatar:hover {
+    transform: scale(1.05) rotate(3deg);
+    box-shadow: 0 0 0 4px var(--graffiti-black), 0 0 0 12px var(--graffiti-neon-cyan);
+}
+
+.portfolio-title {
+    font-family: 'Bangers', cursive;
+    font-size: 3.5rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--graffiti-neon-pink), var(--graffiti-neon-yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+    margin: 0;
+    animation: shake 0.1s infinite;
+}
+
+.portfolio-quote {
+    font-size: 1rem;
+    border-left: 4px solid var(--graffiti-neon-cyan);
+    padding-left: 1rem;
+    color: var(--text-secondary);
+}
+
+/* ---------- НАВИГАЦИЯ: ТРАФАРЕТНЫЙ СТИЛЬ ---------- */
+.portfolio-nav {
+    background: var(--graffiti-black);
+    border-top: 2px solid var(--graffiti-neon-yellow);
+    border-bottom: 2px solid var(--graffiti-neon-pink);
+    padding: 0.5rem;
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.portfolio-nav a {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    padding: 0.5rem 1.2rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--graffiti-neon-cyan);
+    color: var(--graffiti-neon-cyan);
+    transition: 0.1s linear;
+    position: relative;
+}
+
+.portfolio-nav a::before {
+    content: "✱";
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--graffiti-neon-pink);
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.portfolio-nav a:hover {
+    background: var(--graffiti-neon-pink);
+    color: var(--graffiti-black);
+    border-color: var(--graffiti-neon-yellow);
+    box-shadow: 0 0 8px var(--graffiti-neon-pink);
+}
+
+.portfolio-nav a:hover::before {
+    opacity: 1;
+    left: -20px;
+}
+
+.portfolio-nav a.active {
+    background: var(--graffiti-neon-cyan);
+    color: var(--graffiti-black);
+    border-color: var(--graffiti-neon-yellow);
+    box-shadow: inset 0 0 5px black;
+}
+
+/* ---------- ОСНОВНОЙ КОНТЕНТ ---------- */
+main {
+    padding: 2rem;
+}
+
+.portfolio-section {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    border-left: 5px solid var(--graffiti-neon-yellow);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.portfolio-section h2 {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    color: var(--graffiti-neon-pink);
+    text-shadow: 3px 3px 0 var(--graffiti-black);
+    display: inline-block;
+    border-bottom: 3px dotted var(--graffiti-neon-cyan);
+    margin-bottom: 1rem;
+}
+
+/* ---------- СТАТИСТИКА ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--graffiti-neon-pink);
+    transition: 0.2s;
+}
+
+.stat:hover {
+    transform: translateY(-5px);
+    border-color: var(--graffiti-neon-cyan);
+    box-shadow: 0 0 12px var(--graffiti-neon-cyan);
+}
+
+.stat-number {
+    font-family: 'Bangers', cursive;
+    font-size: 3rem;
+    color: var(--graffiti-neon-yellow);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ---------- КАРТОЧКИ РАБОТ (СТИЛЬ НАКЛЕЕК) ---------- */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.work-card {
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid var(--graffiti-neon-cyan);
+    transition: 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.work-card::after {
+    content: "⛆";
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    font-size: 40px;
+    color: var(--graffiti-neon-pink);
+    opacity: 0.5;
+    transform: rotate(15deg);
+    pointer-events: none;
+}
+
+.work-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--graffiti-neon-yellow);
+    box-shadow: 0 0 20px var(--graffiti-neon-pink);
+}
+
+.work-card img {
+    border-bottom: 3px solid var(--graffiti-neon-pink);
+    filter: grayscale(20%) contrast(120%);
+}
+
+.work-card-content h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 1.6rem;
+    color: var(--graffiti-neon-cyan);
+}
+
+/* ---------- КНОПКИ (СПРЕЙ) ---------- */
+.btn {
+    font-family: 'Courier Prime', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: var(--graffiti-black);
+    border: 1px solid var(--graffiti-neon-yellow);
+    color: var(--graffiti-neon-yellow);
+    padding: 0.6rem 1.2rem;
+    transition: 0.1s linear;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--graffiti-neon-pink);
+    color: var(--graffiti-black);
+    border-color: var(--graffiti-neon-cyan);
+    box-shadow: 0 0 8px var(--graffiti-neon-pink);
+}
+
+.btn-download {
+    border-color: var(--graffiti-neon-pink);
+    color: var(--graffiti-neon-pink);
+}
+
+.btn-download:hover {
+    background: var(--graffiti-neon-cyan);
+    color: black;
+}
+
+.btn-success {
+    background: var(--graffiti-neon-pink);
+    color: black;
+    border: none;
+}
+
+/* ---------- ФИЛЬТРЫ ---------- */
+.filters select, .filters input {
+    background: black;
+    border: 1px solid var(--graffiti-neon-cyan);
+    color: var(--graffiti-neon-cyan);
+    font-family: monospace;
+    padding: 0.5rem;
+}
+
+/* ---------- СПИСОК РАБОТ ---------- */
+.work-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-left: 8px solid var(--graffiti-neon-pink);
+    transition: 0.2s;
+}
+
+.work-item:hover {
+    transform: translateX(8px);
+    border-left-color: var(--graffiti-neon-yellow);
+    background: rgba(0, 0, 0, 0.85);
+}
+
+/* ---------- СТРАНИЦА СКАЧИВАНИЯ ---------- */
+.downloads-category h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    color: var(--graffiti-neon-cyan);
+}
+
+.download-item {
+    background: black;
+    border: 1px solid var(--graffiti-neon-pink);
+}
+
+.download-item:hover {
+    border-color: var(--graffiti-neon-yellow);
+    box-shadow: 0 0 5px var(--graffiti-neon-pink);
+}
+
+/* ---------- ГАЛЕРЕЯ ---------- */
+.gallery-section {
+    border: 2px solid var(--graffiti-neon-pink);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.gallery-images img {
+    border: 2px solid var(--graffiti-neon-cyan);
+    filter: contrast(120%);
+}
+
+.gallery-images img:hover {
+    border-color: var(--graffiti-neon-yellow);
+    transform: scale(1.02);
+}
+
+/* Лайтбокс */
+.lightbox-content {
+    border: 4px solid var(--graffiti-neon-pink);
+    background: black;
+}
+
+.close, .lightbox-nav button {
+    background: var(--graffiti-neon-pink);
+    color: black;
+    font-weight: bold;
+}
+
+/* ---------- ГРАФ (СТИЛЬ ТЭГОВ) ---------- */
+#graph-container {
+    border: 2px solid var(--graffiti-neon-cyan);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.graph-controls button {
+    background: black;
+    border: 1px solid var(--graffiti-neon-pink);
+    color: var(--graffiti-neon-pink);
+    font-family: monospace;
+}
+
+#graph-legend {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--graffiti-neon-yellow);
+}
+
+/* ---------- ФУТЕР ---------- */
+.portfolio-footer {
+    border-top: 2px dashed var(--graffiti-neon-cyan);
+    background: black;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.portfolio-footer a {
+    color: var(--graffiti-neon-pink);
+}
+
+/* ---------- АНИМАЦИЯ ДРОЖАНИЯ ДЛЯ ЗАГОЛОВКОВ ---------- */
+@keyframes shake {
+    0% { transform: translate(0px, 0px); }
+    25% { transform: translate(0.5px, -0.5px); }
+    50% { transform: translate(-0.5px, 0.5px); }
+    75% { transform: translate(0.5px, 0.5px); }
+    100% { transform: translate(-0.5px, -0.5px); }
+}
+
+/* ---------- АДАПТИВНОСТЬ ---------- */
+@media (max-width: 768px) {
+    .portfolio-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .portfolio-title {
+        font-size: 2.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

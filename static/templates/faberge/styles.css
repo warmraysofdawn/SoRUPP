@@ -1,0 +1,624 @@
+/* ------------------------------------------------------------
+FABERGÉ
+   Минимализм, золото, ювелирные окантовки. Эстетика императорских подарков.
+------------------------------------------------------------ */
+
+/* Изысканные шрифты */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&display=swap');
+
+/* ---------- ПЕРЕОПРЕДЕЛЕНИЕ ПЕРЕМЕННЫХ ---------- */
+:root {
+    --faberge-gold: #d4af37;
+    --faberge-gold-light: #f3e5ab;
+    --faberge-gold-dark: #aa7c2c;
+    --faberge-ivory: #fef9e6;
+    --faberge-ebony: #1e1a16;
+    --faberge-burgundy: #6e2c2c;
+    --faberge-silver: #b8b0a0;
+    
+    /* Основные переменные */
+    --accent: var(--faberge-gold);
+    --accent-hover: #c5a028;
+    --bg-primary: var(--faberge-ivory);
+    --bg-secondary: #fcf7ed;
+    --text-primary: #2c2418;
+    --text-secondary: #5a4a36;
+    --border: #e0d6c0;
+    --shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.1);
+    
+    --accent-color: var(--accent);
+    --text-on-accent: #1e1a16;
+    --border-color: #d4af37;
+    --border-radius: 4px;
+    --border-radius-sm: 2px;
+    --lightbox-bg: rgba(30, 26, 22, 0.95);
+    --tooltip-bg: #fef9e6;
+    
+    --success-color: #6e2c2c;
+    --error-color: #b87c4a;
+    
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+}
+
+/* ---------- ГЛОБАЛЬНЫЙ СТИЛЬ ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: linear-gradient(145deg, #e8e0d0 0%, #d6cbae 100%);
+    padding: 1.5rem;
+    min-height: 100vh;
+}
+
+/* Узор "елочка" на фоне (намёк на ювелирную гравировку) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(45deg, rgba(212, 175, 55, 0.02) 0px, rgba(212, 175, 55, 0.02) 2px, transparent 2px, transparent 8px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    border: 1px solid var(--faberge-gold);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+/* Двойная золотая рамка + уголки */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    border: 1px solid var(--faberge-gold-light);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.container::after {
+    content: "❦";
+    position: absolute;
+    bottom: -12px;
+    right: 20px;
+    font-size: 24px;
+    color: var(--faberge-gold);
+    background: var(--bg-primary);
+    padding: 0 8px;
+    font-family: serif;
+}
+
+/* ---------- ШАПКА (купол как у яйца Фаберже) ---------- */
+.portfolio-header {
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+    background: linear-gradient(135deg, #fcf7ed 0%, #f5ecda 100%);
+    border-bottom: 2px solid var(--faberge-gold);
+    position: relative;
+}
+
+.portfolio-header::before {
+    content: "⚜️";
+    position: absolute;
+    top: 1rem;
+    left: 2rem;
+    font-size: 1.8rem;
+    opacity: 0.4;
+}
+
+.portfolio-header::after {
+    content: "⚜️";
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    font-size: 1.8rem;
+    opacity: 0.4;
+}
+
+.portfolio-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--faberge-gold);
+    box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 6px var(--faberge-gold-light);
+    margin-bottom: 1rem;
+    transition: transform 0.3s;
+}
+
+.portfolio-avatar:hover {
+    transform: scale(1.02);
+}
+
+.portfolio-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #d4af37, #f3e5ab, #aa7c2c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-bottom: 0.25rem;
+}
+
+.portfolio-quote {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    border-top: 1px solid var(--border);
+    display: inline-block;
+    padding-top: 0.75rem;
+    max-width: 70%;
+    margin: 0.5rem auto 0;
+}
+
+/* ---------- НАВИГАЦИЯ (вензеля) ---------- */
+.portfolio-nav {
+    margin: 0;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--faberge-gold-light);
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    list-style: none;
+    padding: 0.5rem 0;
+}
+
+.portfolio-nav a {
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.6rem 1.6rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.portfolio-nav a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--faberge-gold);
+    transition: width 0.2s, left 0.2s;
+}
+
+.portfolio-nav a:hover {
+    color: var(--faberge-gold-dark);
+}
+
+.portfolio-nav a:hover::after {
+    width: 70%;
+    left: 15%;
+}
+
+.portfolio-nav a.active {
+    color: var(--faberge-gold-dark);
+    background: linear-gradient(to top, rgba(212,175,55,0.1), transparent);
+}
+
+.portfolio-nav a.active::after {
+    width: 70%;
+    left: 15%;
+    background: var(--faberge-gold);
+}
+
+/* ---------- ОСНОВНОЙ КОНТЕНТ ---------- */
+main {
+    padding: 2.5rem 2rem;
+}
+
+.portfolio-section {
+    margin-bottom: 3rem;
+}
+
+.portfolio-section h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    border-left: 4px solid var(--faberge-gold);
+    padding-left: 1rem;
+    margin-bottom: 1.8rem;
+    position: relative;
+    display: inline-block;
+}
+
+.portfolio-section h2::before {
+    content: "✧";
+    position: absolute;
+    left: -1rem;
+    top: 0.2rem;
+    color: var(--faberge-gold);
+    font-size: 1.2rem;
+}
+
+/* ---------- СТАТИСТИКА (жемчужные таблички) ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.stat {
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    background: linear-gradient(145deg, #fef9e6, #faf3e0);
+    border: 1px solid var(--faberge-gold-light);
+    border-radius: 0;
+    position: relative;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.stat::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 1px solid var(--faberge-gold);
+    pointer-events: none;
+}
+
+.stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+.stat-number {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--faberge-gold-dark);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+}
+
+/* ---------- КАРТОЧКИ РАБОТ (рамки с орнаментом) ---------- */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.work-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--faberge-gold-light);
+    transition: all 0.3s;
+    position: relative;
+}
+
+.work-card::after {
+    content: "⚜️";
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.8rem;
+    opacity: 0.3;
+}
+
+.work-card:hover {
+    border-color: var(--faberge-gold);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+}
+
+.work-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--faberge-gold-light);
+}
+
+.work-card-content {
+    padding: 1.5rem;
+}
+
+.work-card-content h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* ---------- КНОПКИ (как драгоценные кабошоны) ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: transparent;
+    border: 1px solid var(--faberge-gold);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    background: linear-gradient(145deg, #fef9e6, #fcf3e0);
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 1px solid var(--faberge-gold-light);
+    pointer-events: none;
+}
+
+.btn:hover {
+    background: var(--faberge-gold);
+    color: #1e1a16;
+    border-color: var(--faberge-gold-dark);
+    transform: translateY(-2px);
+}
+
+.btn-download {
+    background: var(--faberge-gold-dark);
+    border-color: var(--faberge-gold);
+    color: var(--bg-primary);
+}
+
+.btn-download:hover {
+    background: var(--faberge-gold);
+    color: #1e1a16;
+}
+
+.btn-success {
+    background: var(--faberge-burgundy);
+    border-color: var(--faberge-gold);
+    color: var(--faberge-ivory);
+}
+
+.btn-success:hover {
+    background: #5a2323;
+}
+
+/* ---------- ФИЛЬТРЫ ---------- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filters select, .filters input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--faberge-gold-light);
+    padding: 0.5rem 1rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    border-radius: 0;
+}
+
+.filters select:focus, .filters input:focus {
+    outline: none;
+    border-color: var(--faberge-gold);
+    box-shadow: 0 0 0 2px rgba(212,175,55,0.2);
+}
+
+/* ---------- СПИСОК РАБОТ ---------- */
+.works-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.work-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1.5rem;
+    background: var(--bg-secondary);
+    border-left: 6px solid var(--faberge-gold);
+    padding: 1.2rem;
+    transition: 0.2s;
+}
+
+.work-item:hover {
+    transform: translateX(6px);
+    box-shadow: -4px 4px 12px rgba(0,0,0,0.05);
+}
+
+.work-item img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border: 1px solid var(--faberge-gold-light);
+}
+
+.work-info h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+}
+
+/* ---------- СТРАНИЦА СКАЧИВАНИЯ ---------- */
+.downloads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.downloads-category h3 {
+    font-family: 'Cinzel', serif;
+    border-bottom: 1px solid var(--faberge-gold);
+    display: inline-block;
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.download-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.8rem;
+    transition: 0.1s;
+}
+
+.download-item:hover {
+    border-color: var(--faberge-gold);
+}
+
+/* ---------- ГАЛЕРЕЯ (рама со львом) ---------- */
+.gallery-section {
+    border: 1px solid var(--faberge-gold-light);
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    margin-bottom: 2rem;
+}
+
+.gallery-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.gallery-images img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+
+.gallery-images img:hover {
+    border-color: var(--faberge-gold);
+    transform: scale(0.98);
+}
+
+/* Лайтбокс */
+.lightbox-content {
+    border: 6px double var(--faberge-gold);
+    background: var(--bg-primary);
+}
+.close, .lightbox-nav button {
+    background: var(--faberge-gold-dark);
+    color: white;
+    border-radius: 0;
+}
+
+/* ---------- ГРАФ (узлы как самоцветы) ---------- */
+#graph-container {
+    border: 1px solid var(--faberge-gold);
+    background: var(--bg-secondary);
+}
+
+.graph-controls button {
+    background: var(--bg-secondary);
+    border: 1px solid var(--faberge-gold);
+    font-family: 'Cinzel', serif;
+}
+
+#graph-legend {
+    background: rgba(254,249,230,0.95);
+    border: 1px solid var(--faberge-gold);
+}
+
+/* ---------- ФУТЕР ---------- */
+.portfolio-footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--faberge-gold-light);
+    background: var(--bg-secondary);
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.portfolio-footer a {
+    color: var(--faberge-gold-dark);
+    text-decoration: none;
+}
+
+/* ---------- АДАПТИВ ---------- */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .portfolio-header::before,
+    .portfolio-header::after {
+        font-size: 1rem;
+        top: 0.5rem;
+    }
+    .portfolio-title {
+        font-size: 2rem;
+    }
+    .filters {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .container::after {
+        display: none;
+    }
+}

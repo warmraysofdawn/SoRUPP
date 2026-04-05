@@ -1,0 +1,573 @@
+/* ------------------------------------------------------------
+   ALTCORE
+   Не меняет HTML/JS, только визуальное оформление.
+   Эстетика: хрупкая девушка-готка с розовыми волосами, чёрная сумка с вышитым черепом.
+   Рваные линии, цепи, паутина, розовые акценты на тёмном фоне.
+------------------------------------------------------------ */
+
+/* Импорт нестандартных шрифтов */
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cutive+Mono&family=Rubik+Glitch&display=swap');
+
+/* ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---------- */
+:root {
+    --goth-pink: #ff66cc;
+    --goth-dark: #1a0b1a;
+    --goth-darker: #0f050f;
+    --goth-gray: #2e1a2e;
+    --goth-light: #4a2a4a;
+    --goth-rose: #ffb3d9;
+    --goth-blood: #cc1155;
+    --goth-chain: #888;
+    --goth-shadow: rgba(0, 0, 0, 0.6);
+    --goth-glow: 0 0 8px var(--goth-pink);
+    
+    /* переопределение стандартных переменных */
+    --accent: var(--goth-pink);
+    --accent-hover: #ff99dd;
+    --bg-primary: var(--goth-dark);
+    --bg-secondary: #1f0f1f;
+    --text-primary: #f0e6f0;
+    --text-secondary: #d9b3d9;
+    --border: #551a55;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 6px 16px rgba(255, 102, 204, 0.3);
+    --border-color: #882288;
+    --border-radius: 0.75rem;
+    --border-radius-sm: 0.3rem;
+    --lightbox-bg: rgba(10, 5, 10, 0.95);
+    --tooltip-bg: #1a0b1a;
+    --success-color: #cc66aa;
+    --error-color: #ff3366;
+}
+
+/* ---------- БАЗОВЫЙ ФОН И ТЕКСТУРЫ ---------- */
+body {
+    background: radial-gradient(circle at 20% 30%, #2a102a, #0a030a);
+    font-family: 'Cutive Mono', 'Courier New', monospace;
+    color: #f2d9f2;
+    position: relative;
+    padding: 0.5rem;
+}
+
+/* паутина в левом верхнем углу */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle at 0 0, rgba(255,102,204,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="none" stroke="%23ff66cc" stroke-width="0.8" d="M10,10 L30,30 M10,10 L10,40 M10,10 L40,10 M15,25 L25,15 M20,20 L30,20 M20,20 L20,30"/><circle cx="10" cy="10" r="2" fill="%23ff66cc"/></svg>');
+    background-repeat: no-repeat;
+    background-size: 120px;
+    opacity: 0.6;
+}
+
+/* череп розовыми нитками (декор) */
+body::after {
+    content: "💀";
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 48px;
+    color: #ff66cc;
+    text-shadow: 0 0 5px black;
+    opacity: 0.4;
+    pointer-events: none;
+    transform: rotate(-10deg);
+    z-index: 0;
+}
+
+/* контейнер – разорванная тень, асимметричная рамка */
+.container {
+    max-width: 1300px;
+    margin: 1rem auto;
+    background: rgba(26, 11, 26, 0.85);
+    backdrop-filter: blur(2px);
+    border-radius: 2rem 0.5rem 2rem 0.5rem;
+    box-shadow: 0 0 0 2px #882288, 0 0 0 5px #1f0f1f, var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+/* цепь по нижнему краю контейнера */
+.container::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 20px;
+    right: 20px;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, #aaa, #aaa 8px, #444 8px, #444 16px);
+    border-radius: 3px;
+    filter: drop-shadow(0 2px 2px black);
+}
+
+/* ---------- ШАПКА (асимметрия, розовые шипы) ---------- */
+.portfolio-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 2rem 1rem 2rem;
+    background: linear-gradient(135deg, #1f0f1f 0%, #2a102a 100%);
+    border-bottom: 3px dotted var(--goth-pink);
+    position: relative;
+}
+
+.portfolio-header::before {
+    content: "⛓️";
+    position: absolute;
+    bottom: -15px;
+    left: 10%;
+    font-size: 24px;
+    color: var(--goth-pink);
+    filter: drop-shadow(0 0 2px black);
+}
+
+.portfolio-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
+    border: 3px solid var(--goth-pink);
+    box-shadow: 0 0 0 3px #330033, var(--goth-glow);
+    object-fit: cover;
+    margin: 0;
+    transition: transform 0.2s;
+}
+
+.portfolio-avatar:hover {
+    transform: scale(1.02) rotate(2deg);
+}
+
+.portfolio-title {
+    font-family: 'Amatic SC', cursive;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: left;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ff99cc, #ff66cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 0 #3a1a3a;
+    margin: 0;
+}
+
+.portfolio-quote {
+    font-style: italic;
+    font-size: 1rem;
+    text-align: left;
+    border-left: 4px solid var(--goth-pink);
+    padding-left: 0.8rem;
+    margin-top: 0.5rem;
+    color: #d9b3d9;
+}
+
+/* переопределяем порядок: имя и цитата слева, аватар справа */
+.portfolio-header {
+    grid-template-areas: 
+        "title avatar"
+        "quote avatar";
+}
+.portfolio-title { grid-area: title; }
+.portfolio-quote { grid-area: quote; }
+.portfolio-avatar { grid-area: avatar; justify-self: end; }
+
+/* ---------- НАВИГАЦИЯ (готическая лента с шипами) ---------- */
+.portfolio-nav {
+    background: #110511;
+    border-bottom: 2px solid #882288;
+    border-top: 1px solid #551a55;
+    position: relative;
+    margin: 0;
+}
+
+.portfolio-nav ul {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    padding: 0.5rem 1rem;
+}
+
+.portfolio-nav li {
+    margin: 0;
+    position: relative;
+}
+
+.portfolio-nav a {
+    font-family: 'Cutive Mono', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    background: #1f0f1f;
+    border-radius: 30px 10px 30px 10px;
+    border: 1px solid #882288;
+    color: #f2c9f2;
+    transition: 0.2s;
+    letter-spacing: 1px;
+}
+
+.portfolio-nav a:hover {
+    background: var(--goth-pink);
+    color: #0f050f;
+    border-color: white;
+    box-shadow: 0 0 6px var(--goth-pink);
+}
+
+.portfolio-nav a.active {
+    background: var(--goth-pink);
+    color: #1a0b1a;
+    box-shadow: inset 0 0 6px #aa44aa, 0 0 8px var(--goth-pink);
+    border-color: #fff0f5;
+}
+
+/* шипы на навигации */
+.portfolio-nav::before,
+.portfolio-nav::after {
+    content: "✦";
+    position: absolute;
+    top: -12px;
+    color: var(--goth-pink);
+    font-size: 18px;
+    text-shadow: 0 0 2px black;
+}
+.portfolio-nav::before { left: 15px; }
+.portfolio-nav::after { right: 15px; }
+
+/* ---------- ОСНОВНОЙ КОНТЕНТ (рваные края) ---------- */
+main {
+    padding: 2rem;
+    position: relative;
+}
+
+.portfolio-section {
+    margin-bottom: 3rem;
+    background: rgba(31, 15, 31, 0.6);
+    padding: 1.2rem;
+    border-radius: 20px 5px 20px 5px;
+    backdrop-filter: blur(3px);
+    box-shadow: inset 0 0 10px rgba(255,102,204,0.1), 0 4px 10px black;
+}
+
+.portfolio-section h2 {
+    font-family: 'Amatic SC', cursive;
+    font-size: 2.2rem;
+    border-bottom: none;
+    background: linear-gradient(120deg, #ff99cc, #ff66cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.portfolio-section h2::after {
+    content: "🕸️";
+    font-size: 1.4rem;
+    margin-left: 0.5rem;
+    color: var(--goth-pink);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    color: var(--goth-pink);
+}
+
+/* ---------- СТАТИСТИКА: асимметричные ромбы ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat {
+    background: #1f0f1f;
+    border: 1px solid #aa55aa;
+    transform: rotate(0deg) skew(-3deg);
+    clip-path: polygon(10% 0%, 90% 0%, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0% 80%, 0% 20%);
+    transition: all 0.2s;
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    box-shadow: 3px 3px 0 #330033;
+}
+
+.stat:hover {
+    transform: translateY(-5px) skew(-2deg);
+    background: #2a102a;
+    box-shadow: 0 0 15px var(--goth-pink);
+    border-color: var(--goth-pink);
+}
+
+.stat-number {
+    font-size: 2.8rem;
+    font-family: 'Rubik Glitch', monospace;
+    color: var(--goth-pink);
+    text-shadow: 2px 2px 0 #4a1a4a;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #d9b3d9;
+}
+
+/* ---------- СЕТКА РАБОТ (разорванные полароидные карточки) ---------- */
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.work-card {
+    background: #1a0b1a;
+    border: 1px solid #882288;
+    border-radius: 20px 5px 20px 5px;
+    transform: rotate(0deg);
+    transition: 0.2s;
+    box-shadow: 5px 5px 0 #330033;
+    position: relative;
+    overflow: hidden;
+}
+
+.work-card::before {
+    content: "⛓️";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 22px;
+    color: var(--goth-pink);
+    opacity: 0.6;
+    transform: rotate(15deg);
+}
+
+.work-card:hover {
+    transform: translateY(-8px) rotate(0.5deg);
+    box-shadow: 0 0 0 2px var(--goth-pink), 8px 8px 0 #220022;
+    border-color: var(--goth-pink);
+}
+
+.work-card img {
+    height: 180px;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(110%);
+    border-bottom: 2px dotted var(--goth-pink);
+}
+
+.work-card-content {
+    padding: 1rem;
+}
+
+.work-card-content h3 {
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.6rem;
+    color: var(--goth-pink);
+}
+
+/* ---------- КНОПКИ (готические, с цепями) ---------- */
+.btn {
+    background: #2a102a;
+    border: 1px solid #aa55aa;
+    color: #ffccee;
+    font-family: monospace;
+    border-radius: 30px 5px 30px 5px;
+    transition: 0.2s;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--goth-pink);
+    color: #0f050f;
+    border-color: white;
+    box-shadow: 0 0 10px var(--goth-pink);
+}
+
+.btn-download {
+    background: #882288;
+    border-color: #ff66cc;
+}
+
+.btn-success {
+    background: #aa44aa;
+    border-color: #ff99cc;
+}
+
+/* ---------- ФИЛЬТРЫ (расколотые) ---------- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+    border-bottom: 1px dashed #882288;
+    padding-bottom: 1rem;
+}
+
+.filters select, .filters input {
+    background: #1a0b1a;
+    border: 1px solid #aa55aa;
+    color: #ffccee;
+    font-family: monospace;
+    padding: 0.5rem;
+    border-radius: 12px 2px 12px 2px;
+}
+
+/* ---------- СПИСОК РАБОТ (висящие на цепях) ---------- */
+.works-list {
+    gap: 1.8rem;
+}
+
+.work-item {
+    background: #1a0b1a;
+    border-left: 6px solid var(--goth-pink);
+    border-radius: 0 20px 20px 0;
+    grid-template-columns: 140px 1fr;
+    gap: 1rem;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.work-item:hover {
+    transform: translateX(8px);
+    border-left-width: 10px;
+    box-shadow: -5px 0 10px rgba(255,102,204,0.3);
+}
+
+.work-item img {
+    border-radius: 0 8px 8px 0;
+}
+
+/* ---------- СТРАНИЦА СКАЧИВАНИЯ ---------- */
+.downloads-category h3 {
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.8rem;
+    color: var(--goth-pink);
+    border-bottom: 2px dotted #aa55aa;
+}
+
+.download-item {
+    background: #110511;
+    border: 1px solid #882288;
+    border-radius: 15px 2px 15px 2px;
+    transition: 0.1s;
+}
+
+.download-item:hover {
+    background: #2a102a;
+    border-color: var(--goth-pink);
+}
+
+/* ---------- ГАЛЕРЕЯ: рамки с черепами ---------- */
+.gallery-section {
+    border: 2px solid #882288;
+    box-shadow: inset 0 0 20px rgba(255,102,204,0.1), 0 4px 12px black;
+}
+
+.gallery-images img {
+    border: 2px solid #551a55;
+    filter: sepia(20%) hue-rotate(280deg);
+    transition: 0.2s;
+}
+
+.gallery-images img:hover {
+    filter: none;
+    border-color: var(--goth-pink);
+    transform: scale(1.02) rotate(1deg);
+}
+
+/* Лайтбокс – розовое свечение */
+.lightbox-content {
+    border: 3px solid var(--goth-pink);
+    box-shadow: 0 0 30px var(--goth-pink);
+}
+.close, .lightbox-nav button {
+    background: var(--goth-pink);
+    color: black;
+}
+
+/* ---------- ГРАФ (узлы как розы) ---------- */
+#graph-container {
+    background: #110511;
+    border: 1px solid #882288;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 10px var(--goth-pink);
+}
+
+.graph-controls button {
+    background: #2a102a;
+    border: 1px solid var(--goth-pink);
+    font-family: monospace;
+}
+
+#graph-legend {
+    background: rgba(26, 11, 26, 0.9);
+    border: 1px solid #ff66cc;
+    backdrop-filter: blur(4px);
+}
+
+/* ---------- ФУТЕР (паутина и череп) ---------- */
+.portfolio-footer {
+    background: #0a030a;
+    border-top: 2px ridge var(--goth-pink);
+    position: relative;
+}
+
+.portfolio-footer a {
+    color: #ff99cc;
+}
+
+.portfolio-footer::before {
+    content: "💀🕸️";
+    position: absolute;
+    left: 20px;
+    top: -15px;
+    font-size: 22px;
+    opacity: 0.5;
+}
+
+/* ---------- АДАПТИВНОСТЬ (сохраняем читаемость) ---------- */
+@media (max-width: 768px) {
+    .portfolio-header {
+        grid-template-areas: 
+            "avatar"
+            "title"
+            "quote";
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .portfolio-avatar {
+        justify-self: center;
+        margin-bottom: 0.5rem;
+    }
+    .portfolio-title, .portfolio-quote {
+        text-align: center;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .work-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .work-item img {
+        max-width: 180px;
+        margin: 0 auto;
+    }
+    .portfolio-nav ul {
+        justify-content: center;
+    }
+}
+
+/* дополнительный розовый блеск для ссылок и активных элементов */
+a, .btn, .stat, .work-card {
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
